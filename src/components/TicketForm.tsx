@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { generateRequestId, getNextSlNo, saveLocalTicket, submitTicketToSheet, type Ticket } from "@/lib/tickets";
+import { createTicket, type Ticket } from "@/lib/tickets";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,13 +13,15 @@ interface TicketFormProps {
 }
 
 const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
+  const { user, profile } = useAuth();
   const [userName, setUserName] = useState("");
   const [process, setProcess] = useState("");
   const [reportedBy, setReportedBy] = useState("");
   const [priority, setPriority] = useState<"Low" | "Medium" | "High">("Medium");
-  const [technicianName, setTechnicianName] = useState("");
   const [issueCategory, setIssueCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [remarks, setRemarks] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -26,44 +29,38 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userName.trim() || !issueCategory.trim()) return;
+    if (!userName.trim() || !issueCategory.trim() || !user) return;
 
     setSubmitting(true);
-    const now = new Date();
-    const ticket: Ticket = {
-      slNo: getNextSlNo(),
-      requestId: generateRequestId(),
-      createdDate: now.toLocaleDateString(),
-      startTime: now.toLocaleTimeString(),
-      endTime: "",
-      userName: userName.trim(),
+    const ticket = await createTicket({
+      user_name: userName.trim(),
       process: process.trim(),
-      reportedBy: reportedBy.trim(),
+      reported_by: reportedBy.trim(),
       priority,
-      technicianName: technicianName.trim(),
-      issueCategory: issueCategory.trim(),
-      subCategory: subCategory.trim(),
-      effortTime: "",
-      requestStatus: "Open",
+      technician_name: profile?.username || user.email || "",
+      issue_category: issueCategory.trim(),
+      sub_category: subCategory.trim(),
+      start_time: startTime || null,
+      end_time: endTime || null,
+      request_status: "Open",
       remarks: remarks.trim(),
-    };
-
-    saveLocalTicket(ticket);
-    const sheetSuccess = await submitTicketToSheet(ticket);
-    onTicketCreated(ticket);
-
-    toast({
-      title: `${ticket.requestId} created`,
-      description: sheetSuccess ? "Saved to Google Sheet ✓" : "Saved locally (sheet sync pending)",
+      created_by: user.id,
+      created_date: new Date().toISOString().split("T")[0],
     });
 
-    setSuccess(true);
-    setTimeout(() => {
-      setUserName(""); setProcess(""); setReportedBy("");
-      setPriority("Medium"); setTechnicianName("");
-      setIssueCategory(""); setSubCategory(""); setRemarks("");
-      setSuccess(false);
-    }, 1500);
+    if (ticket) {
+      onTicketCreated(ticket);
+      toast({ title: `${ticket.request_id} created`, description: "Ticket saved & synced to Google Sheet." });
+      setSuccess(true);
+      setTimeout(() => {
+        setUserName(""); setProcess(""); setReportedBy("");
+        setPriority("Medium"); setIssueCategory(""); setSubCategory("");
+        setStartTime(""); setEndTime(""); setRemarks("");
+        setSuccess(false);
+      }, 1200);
+    } else {
+      toast({ title: "Error", description: "Failed to create ticket.", variant: "destructive" });
+    }
     setSubmitting(false);
   };
 
@@ -92,13 +89,19 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
           </Select>
         </Field>
         <Field label="Technician Name">
-          <Input placeholder="Assigned technician" value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} maxLength={100} className={fieldClass} />
+          <Input value={profile?.username || ""} readOnly className={`${fieldClass} opacity-70 cursor-not-allowed`} />
         </Field>
         <Field label="Issue Category *">
           <Input placeholder="e.g. Hardware, Software" value={issueCategory} onChange={(e) => setIssueCategory(e.target.value)} required maxLength={100} className={fieldClass} />
         </Field>
         <Field label="Sub-category">
           <Input placeholder="e.g. Printer, VPN" value={subCategory} onChange={(e) => setSubCategory(e.target.value)} maxLength={100} className={fieldClass} />
+        </Field>
+        <Field label="Start Time">
+          <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className={fieldClass} />
+        </Field>
+        <Field label="End Time">
+          <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={fieldClass} />
         </Field>
       </div>
 

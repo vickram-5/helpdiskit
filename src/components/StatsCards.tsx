@@ -8,8 +8,8 @@ interface StatsCardsProps {
 const StatsCards = ({ tickets }: StatsCardsProps) => {
   const total = tickets.length;
   const high = tickets.filter((t) => t.priority === "High").length;
-  const open = tickets.filter((t) => t.requestStatus === "Open").length;
-  const closed = tickets.filter((t) => t.requestStatus !== "Open").length;
+  const open = tickets.filter((t) => t.request_status === "Open").length;
+  const closed = tickets.filter((t) => t.request_status !== "Open").length;
 
   const stats = [
     { label: "Total Tickets", value: total, icon: TicketIcon, color: "text-primary" },
