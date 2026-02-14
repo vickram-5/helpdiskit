@@ -1,13 +1,17 @@
 import { useState, useMemo } from "react";
 import type { Ticket } from "@/lib/tickets";
+import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Inbox } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Inbox, Pencil, Trash2 } from "lucide-react";
 
 interface TicketTableProps {
   tickets: Ticket[];
+  onEdit?: (ticket: Ticket) => void;
+  onDelete?: (ticket: Ticket) => void;
 }
 
 const priorityColors: Record<string, string> = {
@@ -21,7 +25,8 @@ const statusColors: Record<string, string> = {
   Closed: "bg-status-closed/10 text-status-closed border-status-closed/30",
 };
 
-const TicketTable = ({ tickets }: TicketTableProps) => {
+const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
+  const { role } = useAuth();
   const [search, setSearch] = useState("");
   const [filterPriority, setFilterPriority] = useState("All");
   const [filterStatus, setFilterStatus] = useState("All");
@@ -30,15 +35,17 @@ const TicketTable = ({ tickets }: TicketTableProps) => {
     return tickets.filter((t) => {
       const q = search.toLowerCase();
       const matchesSearch = !search ||
-        t.requestId.toLowerCase().includes(q) ||
-        t.userName.toLowerCase().includes(q) ||
-        t.issueCategory.toLowerCase().includes(q) ||
-        t.technicianName.toLowerCase().includes(q);
+        t.request_id.toLowerCase().includes(q) ||
+        t.user_name.toLowerCase().includes(q) ||
+        t.issue_category.toLowerCase().includes(q) ||
+        t.technician_name.toLowerCase().includes(q);
       const matchesPriority = filterPriority === "All" || t.priority === filterPriority;
-      const matchesStatus = filterStatus === "All" || t.requestStatus === filterStatus;
+      const matchesStatus = filterStatus === "All" || t.request_status === filterStatus;
       return matchesSearch && matchesPriority && matchesStatus;
     });
   }, [tickets, search, filterPriority, filterStatus]);
+
+  const isAdmin = role === "admin";
 
   return (
     <div className="space-y-4">
@@ -76,22 +83,35 @@ const TicketTable = ({ tickets }: TicketTableProps) => {
           <Table>
             <TableHeader>
               <TableRow className="bg-secondary/30 hover:bg-secondary/30">
-                {["Sl", "Request ID", "Date", "User", "Category", "Priority", "Technician", "Status"].map((h) => (
+                {["Sl", "Request ID", "Date", "User", "Category", "Priority", "Technician", "Status", "Effort", ...(isAdmin ? ["Actions"] : [])].map((h) => (
                   <TableHead key={h} className="font-semibold text-xs uppercase tracking-wider text-muted-foreground whitespace-nowrap">{h}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((t) => (
-                <TableRow key={t.requestId} className="hover:bg-secondary/20 transition-colors">
-                  <TableCell className="font-mono text-xs">{t.slNo}</TableCell>
-                  <TableCell className="font-mono text-xs text-primary">{t.requestId}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{t.createdDate}</TableCell>
-                  <TableCell className="font-medium">{t.userName}</TableCell>
-                  <TableCell className="text-sm">{t.issueCategory}{t.subCategory ? ` / ${t.subCategory}` : ""}</TableCell>
+                <TableRow key={t.id} className="hover:bg-secondary/20 transition-colors">
+                  <TableCell className="font-mono text-xs">{t.sl_no}</TableCell>
+                  <TableCell className="font-mono text-xs text-primary">{t.request_id}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{t.created_date}</TableCell>
+                  <TableCell className="font-medium">{t.user_name}</TableCell>
+                  <TableCell className="text-sm">{t.issue_category}{t.sub_category ? ` / ${t.sub_category}` : ""}</TableCell>
                   <TableCell><Badge variant="outline" className={priorityColors[t.priority] || ""}>{t.priority}</Badge></TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{t.technicianName || "—"}</TableCell>
-                  <TableCell><Badge variant="outline" className={statusColors[t.requestStatus] || statusColors.Open}>{t.requestStatus}</Badge></TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{t.technician_name || "—"}</TableCell>
+                  <TableCell><Badge variant="outline" className={statusColors[t.request_status] || statusColors.Open}>{t.request_status}</Badge></TableCell>
+                  <TableCell className="text-sm font-mono text-muted-foreground">{t.effort_time || "—"}</TableCell>
+                  {isAdmin && (
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit?.(t)}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => onDelete?.(t)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
