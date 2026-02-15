@@ -68,7 +68,7 @@ const Index = () => {
               <TicketIcon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight">IT Management</h1>
+              <h1 className="text-lg font-bold tracking-tight">CyberVibe Global Solutions</h1>
               <p className="text-xs text-muted-foreground">
                 {profile?.full_name} • <span className="capitalize">{role}</span>
               </p>
