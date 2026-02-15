@@ -8,6 +8,7 @@ interface AuthContextType {
   role: "admin" | "technician" | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signInWithUsername: (username: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -58,12 +59,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error: error?.message || null };
   };
 
+  const signInWithUsername = async (username: string, password: string) => {
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("lookup-email", {
+        body: { username },
+      });
+      if (fnError || !data?.email) {
+        return { error: "Invalid username or password" };
+      }
+      const { error } = await supabase.auth.signInWithPassword({ email: data.email, password });
+      return { error: error ? "Invalid username or password" : null };
+    } catch {
+      return { error: "Login failed. Please try again." };
+    }
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, role, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, profile, role, loading, signIn, signInWithUsername, signOut }}>
       {children}
     </AuthContext.Provider>
   );

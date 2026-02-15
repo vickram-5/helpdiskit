@@ -12,18 +12,20 @@ const StatsCards = ({ tickets }: StatsCardsProps) => {
   const closed = tickets.filter((t) => t.request_status !== "Open").length;
 
   const stats = [
-    { label: "Total Tickets", value: total, icon: TicketIcon, color: "text-primary" },
-    { label: "High Priority", value: high, icon: AlertTriangle, color: "text-priority-high" },
-    { label: "Open", value: open, icon: Clock, color: "text-status-open" },
-    { label: "Resolved", value: closed, icon: CheckCircle2, color: "text-status-closed" },
+    { label: "Total Tickets", value: total, icon: TicketIcon, color: "text-primary", glow: "glow-primary" },
+    { label: "High Priority", value: high, icon: AlertTriangle, color: "text-priority-high", glow: "" },
+    { label: "Open", value: open, icon: Clock, color: "text-status-open", glow: "" },
+    { label: "Resolved", value: closed, icon: CheckCircle2, color: "text-status-closed", glow: "" },
   ];
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat) => (
-        <div key={stat.label} className="bg-card border border-border rounded-lg p-4 ticket-glow ticket-glow-hover transition-all">
+        <div key={stat.label} className={`glass-card glass-card-hover rounded-2xl p-5 transition-all cursor-default ${stat.glow}`}>
           <div className="flex items-center gap-3">
-            <stat.icon className={`h-5 w-5 ${stat.color}`} />
+            <div className={`h-10 w-10 rounded-xl bg-secondary flex items-center justify-center`}>
+              <stat.icon className={`h-5 w-5 ${stat.color}`} />
+            </div>
             <div>
               <p className="text-2xl font-bold font-mono">{stat.value}</p>
               <p className="text-xs text-muted-foreground">{stat.label}</p>

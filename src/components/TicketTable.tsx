@@ -52,10 +52,10 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search ID, user, category..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50 border-border" />
+          <Input placeholder="Search ID, user, category..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50 border-border rounded-xl" />
         </div>
         <Select value={filterPriority} onValueChange={setFilterPriority}>
-          <SelectTrigger className="w-full sm:w-36 bg-secondary/50 border-border"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-36 bg-secondary/50 border-border rounded-xl"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="All">All Priorities</SelectItem>
             <SelectItem value="High">🔴 High</SelectItem>
@@ -64,7 +64,7 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full sm:w-32 bg-secondary/50 border-border"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-32 bg-secondary/50 border-border rounded-xl"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="All">All Status</SelectItem>
             <SelectItem value="Open">Open</SelectItem>
@@ -79,10 +79,10 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
           <p className="text-sm">No tickets found</p>
         </div>
       ) : (
-        <div className="rounded-lg border border-border overflow-x-auto">
+        <div className="rounded-xl border border-border overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+              <TableRow className="bg-secondary/30 hover:bg-secondary/30 border-b border-border">
                 {["Sl", "Request ID", "Date", "User", "Category", "Priority", "Technician", "Status", "Effort", ...(isAdmin ? ["Actions"] : [])].map((h) => (
                   <TableHead key={h} className="font-semibold text-xs uppercase tracking-wider text-muted-foreground whitespace-nowrap">{h}</TableHead>
                 ))}
@@ -90,23 +90,23 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
             </TableHeader>
             <TableBody>
               {filtered.map((t) => (
-                <TableRow key={t.id} className="hover:bg-secondary/20 transition-colors">
+                <TableRow key={t.id} className="hover:bg-secondary/20 transition-colors border-b border-border/50">
                   <TableCell className="font-mono text-xs">{t.sl_no}</TableCell>
                   <TableCell className="font-mono text-xs text-primary">{t.request_id}</TableCell>
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{t.created_date}</TableCell>
                   <TableCell className="font-medium">{t.user_name}</TableCell>
                   <TableCell className="text-sm">{t.issue_category}{t.sub_category ? ` / ${t.sub_category}` : ""}</TableCell>
-                  <TableCell><Badge variant="outline" className={priorityColors[t.priority] || ""}>{t.priority}</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className={`rounded-lg ${priorityColors[t.priority] || ""}`}>{t.priority}</Badge></TableCell>
                   <TableCell className="text-sm text-muted-foreground">{t.technician_name || "—"}</TableCell>
-                  <TableCell><Badge variant="outline" className={statusColors[t.request_status] || statusColors.Open}>{t.request_status}</Badge></TableCell>
+                  <TableCell><Badge variant="outline" className={`rounded-lg ${statusColors[t.request_status] || statusColors.Open}`}>{t.request_status}</Badge></TableCell>
                   <TableCell className="text-sm font-mono text-muted-foreground">{t.effort_time || "—"}</TableCell>
                   {isAdmin && (
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit?.(t)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-primary/10 hover:text-primary" onClick={() => onEdit?.(t)}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => onDelete?.(t)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => onDelete?.(t)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>

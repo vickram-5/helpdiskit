@@ -2,74 +2,74 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TicketIcon, Loader2, LogIn } from "lucide-react";
+import { Loader2, LogIn, Shield } from "lucide-react";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signInWithUsername } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signInWithUsername(username, password);
     if (error) setError(error);
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background mesh-bg dot-grid flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="bg-card border border-border rounded-xl p-8 ticket-glow">
+        <div className="glass-card rounded-2xl p-8 glow-primary">
           <div className="flex flex-col items-center mb-8">
-            <div className="h-14 w-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-              <TicketIcon className="h-7 w-7 text-primary" />
+            <div className="h-16 w-16 rounded-2xl bg-primary/10 gradient-border flex items-center justify-center mb-5">
+              <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">CyberVibe Global Solutions</h1>
-            <p className="text-sm text-muted-foreground mt-1">IT Ticketing System — Sign In</p>
+            <h1 className="text-2xl font-bold tracking-tight gradient-text">CyberVibe Global Solutions</h1>
+            <p className="text-sm text-muted-foreground mt-2">IT Ticketing System</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Email</label>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Username</label>
               <Input
-                type="email"
-                placeholder="admin@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
-                className="bg-secondary/50 border-border"
+                className="h-12 bg-secondary/50 border-border rounded-xl focus:border-primary transition-all"
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Password</label>
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Password</label>
               <Input
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-secondary/50 border-border"
+                className="h-12 bg-secondary/50 border-border rounded-xl focus:border-primary transition-all"
               />
             </div>
 
             {error && (
-              <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
+              <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-xl px-4 py-3">
                 {error}
               </p>
             )}
 
-            <Button type="submit" disabled={loading} className="w-full h-11 font-semibold">
+            <Button type="submit" disabled={loading} className="w-full h-12 font-semibold rounded-xl text-sm tracking-wide bg-primary hover:bg-primary/90 transition-all">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
               Sign In
             </Button>
           </form>
 
           <p className="text-xs text-muted-foreground text-center mt-6">
-            Contact your administrator for account access
+            Contact your administrator for access
           </p>
         </div>
       </div>
