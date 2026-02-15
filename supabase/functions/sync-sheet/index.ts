@@ -3,7 +3,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwa1wkZTP2wfaqVAo5mue3EG0Ir2jyra8WqFj8O3KfwITiSOy1dFjDQ96Y7sV20ST9-/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwqJxK7ENmRA9Ud_HQ2ubfq2fBpglxN3OCvj_H_pV_R1HJdUku2dPHtou-hbLe5ssiv0A/exec";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -34,7 +34,8 @@ Deno.serve(async (req) => {
 
     await fetch(GOOGLE_SHEET_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload),
     });
 

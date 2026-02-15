@@ -28,8 +28,8 @@ const Login = () => {
             <div className="h-14 w-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
               <TicketIcon className="h-7 w-7 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">IT Management</h1>
-            <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
+            <h1 className="text-2xl font-bold tracking-tight">CyberVibe Global Solutions</h1>
+            <p className="text-sm text-muted-foreground mt-1">IT Ticketing System — Sign In</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
