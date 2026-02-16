@@ -32,17 +32,39 @@ Deno.serve(async (req) => {
       "Remarks": ticket.remarks || "",
     };
 
-    await fetch(GOOGLE_SHEET_URL, {
+    console.log("Syncing to Google Sheet, action:", action);
+
+    // Google Apps Script redirects POST requests. We need to follow manually.
+    let response = await fetch(GOOGLE_SHEET_URL, {
       method: "POST",
-      mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload),
+      redirect: "follow",
     });
 
-    return new Response(JSON.stringify({ success: true }), {
+    // If we get a redirect, follow it manually with GET (Google Apps Script pattern)
+    if (response.status === 302 || response.status === 301 || response.status === 307) {
+      const redirectUrl = response.headers.get("location");
+      if (redirectUrl) {
+        console.log("Following redirect to:", redirectUrl);
+        response = await fetch(redirectUrl);
+      }
+    }
+
+    const status = response.status;
+    const responseText = await response.text();
+    console.log("Google Sheet response status:", status);
+    console.log("Google Sheet response:", responseText.substring(0, 200));
+
+    if (status >= 400) {
+      console.error("Google Sheet sync failed with status:", status);
+    }
+
+    return new Response(JSON.stringify({ success: status < 400, status }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.error("Sync error:", error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
