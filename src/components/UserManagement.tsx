@@ -30,7 +30,7 @@ const UserManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
@@ -55,15 +55,16 @@ const UserManagement = () => {
 
   const handleCreate = async () => {
     setLoading(true);
+    const autoEmail = `${username.toLowerCase().replace(/\s+/g, '')}@cybervibe.local`;
     const { data, error } = await supabase.functions.invoke("manage-users", {
-      body: { action: "create", email, password, username, full_name: fullName, role },
+      body: { action: "create", email: autoEmail, password, username, full_name: fullName, role },
     });
     if (data?.error || error) {
       toast({ title: "Error", description: data?.error || error?.message, variant: "destructive" });
     } else {
       toast({ title: "User created", description: `${username} added as ${role}.` });
       setShowAdd(false);
-      setEmail(""); setPassword(""); setUsername(""); setFullName(""); setRole("technician");
+      setPassword(""); setUsername(""); setFullName(""); setRole("technician");
       fetchUsers();
     }
     setLoading(false);
@@ -133,16 +134,16 @@ const UserManagement = () => {
           <DialogHeader><DialogTitle>Add New User</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Email *</label>
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@company.com" className={fieldClass} />
+              <label className="text-xs font-medium text-muted-foreground">Username *</label>
+              <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="johndoe" className={fieldClass} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Full Name *</label>
+              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className={fieldClass} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Password *</label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={fieldClass} />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Username *</label>
-              <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="johndoe" className={fieldClass} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Full Name *</label>
@@ -161,7 +162,7 @@ const UserManagement = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={loading || !email || !password || !username || !fullName}>
+            <Button onClick={handleCreate} disabled={loading || !password || !username || !fullName}>
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Create User
             </Button>
