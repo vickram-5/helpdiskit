@@ -76,6 +76,9 @@ Deno.serve(async (req) => {
     }
 
     if (action === "delete") {
+      // Delete user's tickets first to avoid FK constraint errors
+      await supabaseAdmin.from("tickets").delete().eq("created_by", user_id);
+      // Delete user's profile and role (cascaded from auth.users delete)
       const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user_id);
       if (deleteError) {
         return new Response(JSON.stringify({ error: deleteError.message }), { status: 400, headers: corsHeaders });
