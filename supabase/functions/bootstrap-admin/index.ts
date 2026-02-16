@@ -16,25 +16,45 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    const { action } = await req.json();
+
+    if (action === "update-password") {
+      const { user_id, password } = await req.json();
+      // handled below
+    }
+
+    // Seed/update users
     const results: string[] = [];
 
-    // Seed users list
-    const usersToSeed = [
-      { email: "admin@cybervibe.com", password: "Admin@12345", username: "Admin", full_name: "Admin", role: "admin" },
+    // Update existing admin password
+    const { data: adminProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id")
+      .eq("username", "Admin")
+      .single();
+
+    if (adminProfile) {
+      const { error } = await supabaseAdmin.auth.admin.updateUserById(adminProfile.user_id, {
+        password: "Admin@12345",
+      });
+      results.push(error ? `Admin password update failed: ${error.message}` : "Admin password updated");
+    }
+
+    // Seed technicians if missing
+    const techUsers = [
       { email: "tech01@cybervibe.com", password: "password", username: "tech01", full_name: "Technician 01", role: "technician" },
       { email: "tech02@cybervibe.com", password: "password", username: "tech02", full_name: "Technician 02", role: "technician" },
       { email: "tech03@cybervibe.com", password: "password", username: "tech03", full_name: "Technician 03", role: "technician" },
     ];
 
-    for (const u of usersToSeed) {
-      // Check if user already exists by listing and filtering
-      const { data: existingProfiles } = await supabaseAdmin
+    for (const u of techUsers) {
+      const { data: existing } = await supabaseAdmin
         .from("profiles")
-        .select("user_id, username")
+        .select("user_id")
         .eq("username", u.username);
 
-      if (existingProfiles && existingProfiles.length > 0) {
-        results.push(`${u.username} already exists, skipping`);
+      if (existing && existing.length > 0) {
+        results.push(`${u.username} exists, skipping`);
         continue;
       }
 
@@ -50,11 +70,8 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      await supabaseAdmin
-        .from("user_roles")
-        .insert({ user_id: newUser.user.id, role: u.role });
-
-      results.push(`${u.username} created as ${u.role}`);
+      await supabaseAdmin.from("user_roles").insert({ user_id: newUser.user.id, role: u.role });
+      results.push(`${u.username} created`);
     }
 
     return new Response(JSON.stringify({ success: true, results }), {
