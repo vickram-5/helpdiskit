@@ -3,7 +3,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwqJxK7ENmRA9Ud_HQ2ubfq2fBpglxN3OCvj_H_pV_R1HJdUku2dPHtou-hbLe5ssiv0A/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxitMHVaJTfw-bZmjy0mVpCpcq3VuXrtSiLedDCkVlPrQTBYaHEJ7AFEytgsozSCOEB/exec";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
