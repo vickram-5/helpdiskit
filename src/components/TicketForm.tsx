@@ -56,7 +56,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
       sub_category: subCategory,
       start_time: startTime || null,
       end_time: endTime || null,
-      request_status: "Open",
+      request_status: "Closed",
       remarks: remarks.trim(),
       created_by: user.id,
       created_date: new Date().toISOString().split("T")[0],
