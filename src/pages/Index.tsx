@@ -104,21 +104,10 @@ const Index = () => {
             </TabsList>
 
             <TabsContent value="tickets" className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-1">
-                  <div className="glass-card rounded-2xl p-6 glow-primary sticky top-24">
-                    <h2 className="text-base font-semibold mb-1 gradient-text">Raise a Ticket</h2>
-                    <p className="text-xs text-muted-foreground mb-5">Submit a new support request</p>
-                    <TicketForm onTicketCreated={handleTicketCreated} />
-                  </div>
-                </div>
-                <div className="lg:col-span-2">
-                  <div className="glass-card rounded-2xl p-6">
-                    <h2 className="text-base font-semibold mb-1">All Tickets</h2>
-                    <p className="text-xs text-muted-foreground mb-5">Manage all support requests</p>
-                    <TicketTable tickets={tickets} onEdit={setEditTicket} onDelete={setDeleteTarget} />
-                  </div>
-                </div>
+              <div className="glass-card rounded-2xl p-6">
+                <h2 className="text-base font-semibold mb-1">All Tickets</h2>
+                <p className="text-xs text-muted-foreground mb-5">Manage all support requests</p>
+                <TicketTable tickets={tickets} onEdit={setEditTicket} onDelete={setDeleteTarget} />
               </div>
             </TabsContent>
 
