@@ -93,7 +93,7 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
                 <TableRow key={t.id} className="hover:bg-secondary/20 transition-colors border-b border-border/50">
                   <TableCell className="font-mono text-xs">{t.sl_no}</TableCell>
                   <TableCell className="font-mono text-xs text-primary">{t.request_id}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{t.created_date}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{t.created_date ? t.created_date.split('-').reverse().join('-') : ''}</TableCell>
                   <TableCell className="font-medium">{t.user_name}</TableCell>
                   <TableCell className="text-sm">{t.issue_category}{t.sub_category ? ` / ${t.sub_category}` : ""}</TableCell>
                   <TableCell><Badge variant="outline" className={`rounded-lg ${priorityColors[t.priority] || ""}`}>{t.priority}</Badge></TableCell>

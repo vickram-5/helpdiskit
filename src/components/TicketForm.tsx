@@ -84,10 +84,10 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <Field label="Start Time">
-          <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className={fieldClass} />
+          <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className={fieldClass} step="60" />
         </Field>
         <Field label="End Time">
-          <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={fieldClass} />
+          <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={fieldClass} step="60" />
         </Field>
       </div>
 
