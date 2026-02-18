@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, LogIn, Shield } from "lucide-react";
+import { Loader2, LogIn } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -25,10 +26,7 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="glass-card rounded-2xl p-8 glow-primary">
           <div className="flex flex-col items-center mb-8">
-            <div className="h-16 w-16 rounded-2xl bg-primary/10 gradient-border flex items-center justify-center mb-5">
-              <Shield className="h-8 w-8 text-primary" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight gradient-text">CyberVibe Global Solutions</h1>
+            <img src={logo} alt="CyberVibe" className="h-16 mb-5" />
             <p className="text-sm text-muted-foreground mt-2">IT Ticketing System</p>
           </div>
 
