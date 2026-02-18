@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Download, Users, LayoutDashboard, PlusCircle, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import logo from "@/assets/logo.png";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,11 +66,8 @@ const Index = () => {
       <header className="border-b border-border glass-card sticky top-0 z-10">
         <div className="container max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 gradient-border flex items-center justify-center">
-              <LayoutDashboard className="h-5 w-5 text-primary" />
-            </div>
+            <img src={logo} alt="CyberVibe" className="h-10" />
             <div>
-              <h1 className="text-lg font-bold tracking-tight gradient-text">CyberVibe Global Solutions</h1>
               <p className="text-xs text-muted-foreground">
                 {profile?.full_name} • <span className="capitalize font-medium text-primary/80">{role}</span>
               </p>
