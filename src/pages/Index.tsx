@@ -66,7 +66,7 @@ const Index = () => {
       <header className="border-b border-border glass-card sticky top-0 z-10">
         <div className="container max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <img src={logo} alt="CyberVibe" className="h-10" />
+            <img src={logo} alt="Vindhya E-Infomedia" className="h-10" />
             <div>
               <p className="text-xs text-muted-foreground">
                 {profile?.full_name} • <span className="capitalize font-medium text-primary/80">{role}</span>

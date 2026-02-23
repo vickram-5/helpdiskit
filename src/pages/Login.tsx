@@ -26,7 +26,7 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="glass-card rounded-2xl p-8 glow-primary">
           <div className="flex flex-col items-center mb-8">
-            <img src={logo} alt="CyberVibe" className="h-16 mb-5" />
+            <img src={logo} alt="Vindhya E-Infomedia" className="h-16 mb-5" />
             <p className="text-sm text-muted-foreground mt-2">IT Ticketing System</p>
           </div>
 
