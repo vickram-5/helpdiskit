@@ -174,6 +174,10 @@ const Index = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <footer className="border-t border-border py-4 mt-8 text-center text-xs text-muted-foreground">
+        © 2026 CyberVibe Global Solutions Pvt Ltd. All rights reserved.
+      </footer>
     </div>
   );
 };
