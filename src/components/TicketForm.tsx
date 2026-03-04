@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, Loader2, CheckCircle2 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Send, Loader2, CheckCircle2, CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface TicketFormProps {
   onTicketCreated: (ticket: Ticket) => void;
@@ -17,6 +21,7 @@ const ISSUE_CATEGORIES: Record<string, string[]> = {
   Software: ["OS Issue", "Application Error", "Installation", "Update", "Other"],
   Network: ["Internet", "VPN", "Wi-Fi", "LAN", "Other"],
   Access: ["Password Reset", "Account Unlock", "Permission Request", "New Account", "Other"],
+  Other: [],
 };
 
 const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
@@ -30,6 +35,9 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [remarks, setRemarks] = useState("");
+  const [createdDate, setCreatedDate] = useState<Date>(new Date());
+  const [otherCategory, setOtherCategory] = useState("");
+  const [otherSubCategory, setOtherSubCategory] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const { toast } = useToast();
@@ -39,11 +47,16 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
   const handleCategoryChange = (value: string) => {
     setIssueCategory(value);
     setSubCategory("");
+    setOtherCategory("");
+    setOtherSubCategory("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userName.trim() || !issueCategory || !priority || !user) return;
+
+    const finalCategory = issueCategory === "Other" ? (otherCategory.trim() || "Other") : issueCategory;
+    const finalSubCategory = subCategory === "Other" ? (otherSubCategory.trim() || "Other") : subCategory;
 
     setSubmitting(true);
     const ticket = await createTicket({
@@ -52,14 +65,14 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
       reported_by: reportedBy.trim(),
       priority: priority as "Low" | "Medium" | "High",
       technician_name: profile?.username || user.email || "",
-      issue_category: issueCategory,
-      sub_category: subCategory,
+      issue_category: finalCategory,
+      sub_category: finalSubCategory,
       start_time: startTime || null,
       end_time: endTime || null,
       request_status: "Closed",
       remarks: remarks.trim(),
       created_by: user.id,
-      created_date: new Date().toISOString().split("T")[0],
+      created_date: format(createdDate, "yyyy-MM-dd"),
     });
 
     if (ticket) {
@@ -70,6 +83,8 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         setUserName(""); setProcess(""); setReportedBy("");
         setPriority(""); setIssueCategory(""); setSubCategory("");
         setStartTime(""); setEndTime(""); setRemarks("");
+        setOtherCategory(""); setOtherSubCategory("");
+        setCreatedDate(new Date());
         setSuccess(false);
       }, 1200);
     } else {
@@ -82,7 +97,20 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Field label="Date *">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn(fieldClass, "w-full justify-start text-left font-normal", !createdDate && "text-muted-foreground")}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {createdDate ? format(createdDate, "dd/MM/yyyy") : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={createdDate} onSelect={(d) => d && setCreatedDate(d)} initialFocus />
+            </PopoverContent>
+          </Popover>
+        </Field>
         <Field label="Start Time">
           <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className={fieldClass} step="60" />
         </Field>
@@ -129,7 +157,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
           </Select>
         </Field>
         <Field label="Sub-category">
-          <Select value={subCategory} onValueChange={setSubCategory} disabled={!issueCategory}>
+          <Select value={subCategory} onValueChange={(v) => { setSubCategory(v); setOtherSubCategory(""); }} disabled={!issueCategory || issueCategory === "Other"}>
             <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
             <SelectContent>
               {subCategories.map((sub) => (
@@ -139,6 +167,18 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
           </Select>
         </Field>
       </div>
+
+      {issueCategory === "Other" && (
+        <Field label="Specify Category *">
+          <Input placeholder="Enter custom category" value={otherCategory} onChange={(e) => setOtherCategory(e.target.value)} maxLength={100} className={fieldClass} />
+        </Field>
+      )}
+
+      {subCategory === "Other" && (
+        <Field label="Specify Sub-category *">
+          <Input placeholder="Enter custom sub-category" value={otherSubCategory} onChange={(e) => setOtherSubCategory(e.target.value)} maxLength={100} className={fieldClass} />
+        </Field>
+      )}
 
       <Field label="Remarks">
         <Textarea placeholder="Describe the issue..." value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={3} maxLength={2000} className={`${fieldClass} resize-none`} />
