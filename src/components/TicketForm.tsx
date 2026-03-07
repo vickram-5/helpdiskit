@@ -59,7 +59,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
     const finalSubCategory = subCategory === "Other" ? (otherSubCategory.trim() || "Other") : subCategory;
 
     setSubmitting(true);
-    const ticket = await createTicket({
+    const { data: ticket, errorMessage } = await createTicket({
       user_name: userName.trim(),
       process: process.trim(),
       reported_by: reportedBy.trim(),
@@ -88,7 +88,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         setSuccess(false);
       }, 1200);
     } else {
-      toast({ title: "Error", description: "Failed to create ticket.", variant: "destructive" });
+      toast({ title: "Error", description: errorMessage || "Failed to create ticket.", variant: "destructive" });
     }
     setSubmitting(false);
   };

@@ -6,13 +6,25 @@ interface StatsCardsProps {
 }
 
 const StatsCards = ({ tickets }: StatsCardsProps) => {
-  const total = tickets.length;
-  const high = tickets.filter((t) => t.priority === "High").length;
-  const open = tickets.filter((t) => t.request_status === "Open").length;
-  const closed = tickets.filter((t) => t.request_status !== "Open").length;
+  // Filter tickets for current month only
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const currentMonthTickets = tickets.filter((t) => {
+    const d = new Date(t.created_at || t.created_date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+
+  const total = currentMonthTickets.length;
+  const high = currentMonthTickets.filter((t) => t.priority === "High").length;
+  const open = currentMonthTickets.filter((t) => t.request_status === "Open").length;
+  const closed = currentMonthTickets.filter((t) => t.request_status !== "Open").length;
+
+  const monthName = now.toLocaleString("default", { month: "short" });
 
   const stats = [
-    { label: "Total Tickets", value: total, icon: TicketIcon, color: "text-primary", glow: "glow-primary" },
+    { label: `Total (${monthName})`, value: total, icon: TicketIcon, color: "text-primary", glow: "glow-primary" },
     { label: "High Priority", value: high, icon: AlertTriangle, color: "text-priority-high", glow: "" },
     { label: "Open", value: open, icon: Clock, color: "text-status-open", glow: "" },
     { label: "Resolved", value: closed, icon: CheckCircle2, color: "text-status-closed", glow: "" },
