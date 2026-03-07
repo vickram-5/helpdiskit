@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, LogIn } from "lucide-react";
+import NetworkBackground from "@/components/NetworkBackground";
 import logo from "@/assets/logo.png";
 
 const Login = () => {
@@ -22,8 +23,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background mesh-bg dot-grid flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-background mesh-bg flex items-center justify-center px-4 relative">
+      <NetworkBackground />
+
+      <div className="w-full max-w-md relative z-[1]">
         <div className="glass-card rounded-2xl p-8 glow-primary">
           <div className="flex flex-col items-center mb-8">
             <img src={logo} alt="Vindhya E-Infomedia" className="h-16 mb-5" />

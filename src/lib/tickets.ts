@@ -18,6 +18,7 @@ export interface Ticket {
   request_status: string;
   remarks: string;
   created_by: string;
+  created_at?: string;
 }
 
 export const fetchTickets = async (userId?: string, isAdmin?: boolean): Promise<Ticket[]> => {
@@ -33,36 +34,77 @@ export const fetchTickets = async (userId?: string, isAdmin?: boolean): Promise<
   return (data || []) as unknown as Ticket[];
 };
 
-export const createTicket = async (ticket: Omit<Ticket, "id" | "sl_no" | "request_id" | "effort_time">): Promise<Ticket | null> => {
-  const { data, error } = await supabase
-    .from("tickets")
-    .insert({
-      user_name: ticket.user_name,
-      process: ticket.process,
-      reported_by: ticket.reported_by,
-      priority: ticket.priority,
-      technician_name: ticket.technician_name,
-      issue_category: ticket.issue_category,
-      sub_category: ticket.sub_category,
-      request_status: ticket.request_status,
-      remarks: ticket.remarks,
-      created_by: ticket.created_by,
-      start_time: ticket.start_time || null,
-      end_time: ticket.end_time || null,
-      created_date: ticket.created_date,
-    } as any)
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error creating ticket:", error);
-    return null;
+export const createTicket = async (
+  ticket: Omit<Ticket, "id" | "sl_no" | "request_id" | "effort_time">
+): Promise<{ data: Ticket | null; errorMessage: string | null }> => {
+  // Validate required fields
+  if (!ticket.user_name?.trim()) {
+    return { data: null, errorMessage: "User Name is required." };
+  }
+  if (!ticket.issue_category?.trim()) {
+    return { data: null, errorMessage: "Issue Category is required." };
+  }
+  if (!ticket.priority) {
+    return { data: null, errorMessage: "Priority is required." };
+  }
+  if (!ticket.created_by) {
+    return { data: null, errorMessage: "You must be logged in to create a ticket." };
+  }
+  if (!ticket.technician_name?.trim()) {
+    return { data: null, errorMessage: "Technician name is missing. Please reload and try again." };
   }
 
-  // Sync to Google Sheets
-  syncToSheet("create", data);
+  try {
+    console.log("[Ticket] Submitting ticket:", JSON.stringify(ticket, null, 2));
 
-  return data as unknown as Ticket;
+    const { data, error } = await supabase
+      .from("tickets")
+      .insert({
+        user_name: ticket.user_name,
+        process: ticket.process,
+        reported_by: ticket.reported_by,
+        priority: ticket.priority,
+        technician_name: ticket.technician_name,
+        issue_category: ticket.issue_category,
+        sub_category: ticket.sub_category,
+        request_status: ticket.request_status,
+        remarks: ticket.remarks,
+        created_by: ticket.created_by,
+        start_time: ticket.start_time || null,
+        end_time: ticket.end_time || null,
+        created_date: ticket.created_date,
+      } as any)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("[Ticket] Database error:", error.code, error.message, error.details, error.hint);
+
+      if (error.code === "23505") {
+        return { data: null, errorMessage: "Duplicate ticket detected. Please try again." };
+      }
+      if (error.code === "42501" || error.message?.includes("row-level security")) {
+        return { data: null, errorMessage: "Permission denied. Please sign out and sign back in." };
+      }
+      if (error.code === "PGRST301" || error.message?.includes("JWT")) {
+        return { data: null, errorMessage: "Session expired. Please sign out and sign back in." };
+      }
+      return { data: null, errorMessage: `Database error: ${error.message}` };
+    }
+
+    console.log("[Ticket] Created successfully:", data?.request_id);
+
+    // Sync to Google Sheets (fire-and-forget)
+    syncToSheet("create", data);
+
+    return { data: data as unknown as Ticket, errorMessage: null };
+  } catch (err: any) {
+    console.error("[Ticket] Unexpected error:", err);
+    if (err?.message?.includes("Failed to fetch") || err?.message?.includes("NetworkError")) {
+      return { data: null, errorMessage: "Network error. Please check your internet connection." };
+    }
+    return { data: null, errorMessage: `Unexpected error: ${err?.message || "Unknown error"}` };
+  }
 };
 
 export const updateTicket = async (id: string, updates: Partial<Ticket>): Promise<boolean> => {

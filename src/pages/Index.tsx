@@ -7,6 +7,7 @@ import StatsCards from "@/components/StatsCards";
 import DashboardCharts from "@/components/DashboardCharts";
 import EditTicketDialog from "@/components/EditTicketDialog";
 import UserManagement from "@/components/UserManagement";
+import NetworkBackground from "@/components/NetworkBackground";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Download, Users, LayoutDashboard, PlusCircle, History } from "lucide-react";
@@ -61,7 +62,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background mesh-bg">
+    <div className="min-h-screen bg-background mesh-bg relative">
+      <NetworkBackground />
+
       {/* Header */}
       <header className="border-b border-border glass-card sticky top-0 z-10">
         <div className="container max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -84,7 +87,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container max-w-7xl mx-auto px-4 py-8 space-y-8">
+      <main className="container max-w-7xl mx-auto px-4 py-8 space-y-8 relative z-[1]">
         <StatsCards tickets={tickets} />
 
         {isAdmin ? (
@@ -175,7 +178,7 @@ const Index = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <footer className="border-t border-border py-4 mt-8 text-center text-xs text-muted-foreground">
+      <footer className="border-t border-border py-4 mt-8 text-center text-xs text-muted-foreground relative z-[1]">
         © 2026 CyberVibe Global Solutions Pvt Ltd. All rights reserved.
       </footer>
     </div>
