@@ -17,7 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<{ username: string; full_name: string } | null>(null);
-  const [role, setRole] = useState<"admin" | "technician" | null>(null);
+  const [role, setRole] = useState<"admin" | "technician" | "manager" | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfileAndRole = async (userId: string) => {
