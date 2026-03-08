@@ -31,21 +31,21 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[160px] z-20 liquid-glass-strong border-r-0 flex flex-col">
-      <div className="p-4 flex items-center gap-2">
+    <aside className="fixed left-0 top-0 bottom-0 w-[180px] z-20 liquid-glass-strong border-r-0 flex flex-col">
+      <div className="p-4 flex items-center justify-center border-b border-border">
         <img src={logo} alt="Vindhya" className="h-14" />
       </div>
 
-      <nav className="flex-1 px-2 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-5 space-y-1">
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => onViewChange(item.id)}
             className={cn(
-              "w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all",
+              "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all",
               activeView === item.id
-                ? "bg-primary/15 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                ? "bg-primary/15 text-primary border border-primary/20"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
             )}
           >
             <item.icon className="h-4 w-4 shrink-0" />
@@ -53,6 +53,10 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
           </button>
         ))}
       </nav>
+
+      <div className="p-3 border-t border-border">
+        <p className="text-[9px] text-muted-foreground text-center">Vindhya IT Hub</p>
+      </div>
     </aside>
   );
 };
