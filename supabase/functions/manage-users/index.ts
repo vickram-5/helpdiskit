@@ -16,7 +16,6 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     }
 
-    // Verify the caller is admin
     const supabaseUser = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
@@ -31,7 +30,6 @@ Deno.serve(async (req) => {
 
     const callerId = claimsData.claims.sub;
 
-    // Check admin role
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -48,10 +46,10 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: corsHeaders });
     }
 
-    const { action, email, password, username, full_name, role, user_id } = await req.json();
+    const body = await req.json();
+    const { action, email, password, username, full_name, role, user_id, status } = body;
 
     if (action === "create") {
-      // Create user via admin API
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
@@ -63,7 +61,6 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: createError.message }), { status: 400, headers: corsHeaders });
       }
 
-      // Assign role
       const { error: roleError } = await supabaseAdmin
         .from("user_roles")
         .insert({ user_id: newUser.user.id, role: role || "technician" });
@@ -76,9 +73,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "delete") {
-      // Delete user's tickets first to avoid FK constraint errors
       await supabaseAdmin.from("tickets").delete().eq("created_by", user_id);
-      // Delete user's profile and role (cascaded from auth.users delete)
       const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user_id);
       if (deleteError) {
         return new Response(JSON.stringify({ error: deleteError.message }), { status: 400, headers: corsHeaders });
@@ -90,6 +85,38 @@ Deno.serve(async (req) => {
       const { data: profiles } = await supabaseAdmin.from("profiles").select("*");
       const { data: roles } = await supabaseAdmin.from("user_roles").select("*");
       return new Response(JSON.stringify({ profiles, roles }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    if (action === "update") {
+      // Update role if provided
+      if (role) {
+        await supabaseAdmin.from("user_roles").update({ role }).eq("user_id", user_id);
+      }
+
+      // Update status if provided
+      if (status) {
+        await supabaseAdmin.from("profiles").update({ status }).eq("user_id", user_id);
+        
+        // If setting inactive, ban the user; if active, unban
+        if (status === "inactive") {
+          await supabaseAdmin.auth.admin.updateUserById(user_id, { ban_duration: "876600h" });
+        } else if (status === "active") {
+          await supabaseAdmin.auth.admin.updateUserById(user_id, { ban_duration: "none" });
+        }
+      }
+
+      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    if (action === "reset_password") {
+      if (!password || password.length < 6) {
+        return new Response(JSON.stringify({ error: "Password must be at least 6 characters" }), { status: 400, headers: corsHeaders });
+      }
+      const { error: pwError } = await supabaseAdmin.auth.admin.updateUserById(user_id, { password });
+      if (pwError) {
+        return new Response(JSON.stringify({ error: pwError.message }), { status: 400, headers: corsHeaders });
+      }
+      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400, headers: corsHeaders });
