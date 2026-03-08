@@ -21,7 +21,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
 
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "raise", label: "Raise Ticket", icon: PlusCircle },
+    ...(!isAdmin ? [{ id: "raise", label: "Raise Ticket", icon: PlusCircle }] : []),
     { id: "tickets", label: "All Tickets", icon: List },
     ...(isAdmin
       ? [{ id: "users", label: "User Management", icon: Users }]

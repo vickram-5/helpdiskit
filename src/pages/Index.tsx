@@ -142,7 +142,7 @@ const Index = () => {
             <div>
               <p className="text-xs text-muted-foreground">{getGreeting()}</p>
               <h1 className="text-xl font-bold">{profile?.full_name || "User"} 👋</h1>
-              <p className="text-[11px] text-muted-foreground">CyberVibe IT Support Hub — Efficient & AI-Driven</p>
+              <p className="text-[11px] text-muted-foreground">Vindhya IT Support Hub — Efficient & AI-Driven</p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl border-border hover:border-primary/30 transition-all text-xs">
