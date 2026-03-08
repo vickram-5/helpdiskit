@@ -44,8 +44,8 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
             className={cn(
               "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all",
               activeView === item.id
-                ? "bg-primary/15 text-primary border border-primary/20"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                ? "bg-primary/15 text-primary border border-primary/25"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
             )}
           >
             <item.icon className="h-4 w-4 shrink-0" />
