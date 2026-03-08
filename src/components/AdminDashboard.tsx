@@ -33,14 +33,14 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
   const critical = monthTickets.filter((t) => (t.priority as string) === "Critical").length;
 
   const donutData = [
-    { name: "Open", value: open || 0, color: "hsl(200, 85%, 48%)" },
-    { name: "Resolved", value: resolved || 0, color: "hsl(150, 65%, 40%)" },
+    { name: "Open", value: open || 0, color: "hsl(25, 85%, 55%)" },
+    { name: "Resolved", value: resolved || 0, color: "hsl(150, 65%, 45%)" },
     { name: "In Progress", value: inProgress || 0, color: "hsl(40, 90%, 50%)" },
   ].filter(d => d.value > 0);
-  if (donutData.length === 0) donutData.push({ name: "Active", value: 0, color: "hsl(200, 30%, 85%)" });
+  if (donutData.length === 0) donutData.push({ name: "Active", value: 0, color: "hsl(20, 10%, 30%)" });
 
   const analyticsData = [
-    { name: "Low", value: low, color: "hsl(150, 65%, 40%)" },
+    { name: "Low", value: low, color: "hsl(150, 65%, 45%)" },
     { name: "Medium", value: medium, color: "hsl(40, 90%, 50%)" },
     { name: "High", value: high, color: "hsl(0, 75%, 50%)" },
     { name: "Critical", value: critical, color: "hsl(320, 75%, 50%)" },
@@ -67,15 +67,15 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
   ).slice(0, 5);
 
   const tooltipStyle = {
-    background: "hsla(0, 0%, 100%, 0.9)",
-    border: "1px solid hsla(200, 60%, 80%, 0.3)",
+    background: "hsla(20, 12%, 10%, 0.9)",
+    border: "1px solid hsla(25, 20%, 30%, 0.3)",
     borderRadius: "12px",
-    color: "hsl(210, 20%, 20%)",
+    color: "hsl(30, 15%, 90%)",
     backdropFilter: "blur(20px)",
     fontSize: "12px",
   };
 
-  const axisTickStyle = { fill: "hsl(210, 12%, 50%)", fontSize: 11 };
+  const axisTickStyle = { fill: "hsl(30, 8%, 55%)", fontSize: 11 };
 
   const stats = [
     { label: "TOTAL TICKETS", value: total, icon: TicketIcon, color: "text-primary", iconBg: "bg-primary/10" },
@@ -140,7 +140,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={analyticsData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsla(200, 30%, 80%, 0.3)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsla(25, 15%, 25%, 0.3)" />
               <XAxis dataKey="name" tick={axisTickStyle} />
               <YAxis tick={axisTickStyle} allowDecimals={false} />
               <Tooltip contentStyle={tooltipStyle} />
@@ -183,11 +183,11 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
           </div>
           <ResponsiveContainer width="100%" height={160}>
             <LineChart data={weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsla(200, 30%, 80%, 0.3)" />
-              <XAxis dataKey="name" tick={{ fill: "hsl(210, 12%, 50%)", fontSize: 10 }} />
-              <YAxis tick={{ fill: "hsl(210, 12%, 50%)", fontSize: 10 }} allowDecimals={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsla(25, 15%, 25%, 0.3)" />
+              <XAxis dataKey="name" tick={{ fill: "hsl(30, 8%, 55%)", fontSize: 10 }} />
+              <YAxis tick={{ fill: "hsl(30, 8%, 55%)", fontSize: 10 }} allowDecimals={false} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Line type="monotone" dataKey="tickets" stroke="hsl(200, 85%, 48%)" strokeWidth={2} dot={{ r: 3, fill: "hsl(200, 85%, 48%)" }} />
+              <Line type="monotone" dataKey="tickets" stroke="hsl(25, 85%, 55%)" strokeWidth={2} dot={{ r: 3, fill: "hsl(25, 85%, 55%)" }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -200,7 +200,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
                 {donutData.map((e, i) => <Cell key={i} fill={e.color} />)}
               </Pie>
               <Tooltip contentStyle={tooltipStyle} />
-              <Legend wrapperStyle={{ fontSize: "10px" }} />
+              <Legend wrapperStyle={{ fontSize: "10px", color: "hsl(30, 8%, 55%)" }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
