@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { UserPlus, Trash2, Loader2 } from "lucide-react";
+import { UserPlus, Trash2, Loader2, Pencil, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -30,7 +30,8 @@ const UserManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
@@ -84,44 +85,72 @@ const UserManagement = () => {
     setDeleteUser(null);
   };
 
+  const filteredUsers = users.filter((u) =>
+    !searchQuery ||
+    u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const fieldClass = "bg-secondary/30 border-border/50 backdrop-blur-sm rounded-xl";
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-base font-semibold">User Management</h2>
-          <p className="text-xs text-muted-foreground">Add or remove technician accounts</p>
+        <h2 className="text-lg font-semibold">User Management</h2>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search users..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`pl-9 w-48 h-8 text-xs ${fieldClass}`}
+            />
+          </div>
+          <Button size="sm" onClick={() => setShowAdd(true)} className="rounded-xl text-xs h-8">
+            <UserPlus className="mr-1.5 h-3.5 w-3.5" /> Add User
+          </Button>
         </div>
-        <Button size="sm" onClick={() => setShowAdd(true)} className="rounded-xl">
-          <UserPlus className="mr-2 h-3.5 w-3.5" /> Add User
-        </Button>
       </div>
 
       <div className="rounded-2xl border border-border/50 overflow-x-auto liquid-glass-subtle">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-border/50">
-              <TableHead className="text-xs uppercase tracking-wider text-muted-foreground">Username</TableHead>
-              <TableHead className="text-xs uppercase tracking-wider text-muted-foreground">Full Name</TableHead>
-              <TableHead className="text-xs uppercase tracking-wider text-muted-foreground">Role</TableHead>
-              <TableHead className="text-xs uppercase tracking-wider text-muted-foreground">Actions</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground">Username</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground">Display Name</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground">Role</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground">Status</TableHead>
+              <TableHead className="text-xs font-medium text-muted-foreground text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((u) => (
+            {filteredUsers.map((u) => (
               <TableRow key={u.user_id} className="hover:bg-secondary/20 transition-colors border-b border-border/30">
-                <TableCell className="font-medium">{u.username}</TableCell>
-                <TableCell className="text-muted-foreground">{u.full_name}</TableCell>
+                <TableCell className="font-medium text-primary text-sm">{u.username}</TableCell>
+                <TableCell className="text-sm">{u.full_name}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className={u.role === "admin" ? "bg-primary/10 text-primary border-primary/30 rounded-lg" : "bg-secondary/50 text-secondary-foreground rounded-lg"}>
-                    {u.role}
-                  </Badge>
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <span className={`text-xs ${u.role === "admin" ? "text-primary" : "text-muted-foreground"}`}>
+                      {u.role === "admin" ? "⚙" : "🔧"}
+                    </span>
+                    <span className="capitalize">{u.role === "admin" ? "Admin" : "Technician"}</span>
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteUser(u)}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  <Badge className="bg-status-closed/15 text-status-closed border-status-closed/30 rounded-md text-[10px]">
+                    Active
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex gap-1 justify-end">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-primary/10 hover:text-primary">
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteUser(u)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
