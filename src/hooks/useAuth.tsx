@@ -5,7 +5,7 @@ import type { User } from "@supabase/supabase-js";
 interface AuthContextType {
   user: User | null;
   profile: { username: string; full_name: string } | null;
-  role: "admin" | "technician" | null;
+  role: "admin" | "technician" | "manager" | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signInWithUsername: (username: string, password: string) => Promise<{ error: string | null }>;
