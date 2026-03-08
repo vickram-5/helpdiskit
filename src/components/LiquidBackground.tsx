@@ -10,18 +10,23 @@ const LiquidBackground = ({ variant = "dark" }: LiquidBackgroundProps) => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/office-bg.jpg')" }}
       />
-      {/* Light sky-blue overlay */}
+      {/* Heavy blur layer over background */}
+      <div className="absolute inset-0" style={{
+        backdropFilter: "blur(60px) saturate(1.8) brightness(1.1)",
+        WebkitBackdropFilter: "blur(60px) saturate(1.8) brightness(1.1)",
+      }} />
+      {/* Soft tinted overlay */}
       <div className="absolute inset-0" style={{
         background: variant === "light"
-          ? "linear-gradient(135deg, hsla(200, 40%, 95%, 0.82), hsla(195, 50%, 90%, 0.88))"
-          : "linear-gradient(135deg, hsla(200, 35%, 93%, 0.8), hsla(195, 45%, 88%, 0.86))",
+          ? "linear-gradient(160deg, hsla(210, 30%, 96%, 0.55), hsla(200, 25%, 92%, 0.5))"
+          : "linear-gradient(160deg, hsla(210, 25%, 94%, 0.5), hsla(200, 20%, 90%, 0.45))",
       }} />
-      {/* Subtle sky-blue mesh gradient */}
+      {/* iOS 26 style ambient light blobs */}
       <div className="absolute inset-0" style={{
         background: `
-          radial-gradient(ellipse at 15% 20%, hsla(195, 80%, 70%, 0.12) 0%, transparent 50%),
-          radial-gradient(ellipse at 85% 80%, hsla(210, 70%, 65%, 0.08) 0%, transparent 50%),
-          radial-gradient(ellipse at 50% 50%, hsla(200, 60%, 75%, 0.06) 0%, transparent 60%)
+          radial-gradient(ellipse at 20% 15%, hsla(200, 60%, 80%, 0.2) 0%, transparent 45%),
+          radial-gradient(ellipse at 80% 85%, hsla(220, 50%, 75%, 0.15) 0%, transparent 45%),
+          radial-gradient(ellipse at 55% 40%, hsla(195, 40%, 85%, 0.1) 0%, transparent 50%)
         `,
       }} />
     </div>
