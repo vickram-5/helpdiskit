@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   LineChart, Line, Legend,
 } from "recharts";
-import { TicketIcon, Clock, CheckCircle2, AlertTriangle, TrendingUp, Users, Zap } from "lucide-react";
+import { TicketIcon, Clock, CheckCircle2, AlertTriangle, TrendingUp, Users, Zap, Activity } from "lucide-react";
 
 interface AdminDashboardProps {
   tickets: Ticket[];
