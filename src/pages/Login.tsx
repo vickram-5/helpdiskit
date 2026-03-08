@@ -35,7 +35,7 @@ const Login = () => {
           boxShadow: "0 8px 40px hsla(200, 80%, 60%, 0.12), inset 0 1px 0 hsla(0, 0%, 100%, 0.5)",
         }}>
           <div className="flex flex-col items-center mb-8">
-            <img src={logo} alt="Vindhya E-Infomedia" className="h-16 mb-5" />
+            <img src={logo} alt="Vindhya E-Infomedia" className="h-20 mb-5" />
             <p className="text-sm" style={{ color: "hsl(210, 15%, 40%)" }}>IT Ticketing System</p>
           </div>
 
