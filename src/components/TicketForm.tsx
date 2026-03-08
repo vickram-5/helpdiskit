@@ -93,7 +93,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
     setSubmitting(false);
   };
 
-  const fieldClass = "bg-secondary/50 border-border focus:border-primary";
+  const fieldClass = "bg-secondary/30 border-border/50 backdrop-blur-sm focus:border-primary/50 rounded-xl transition-all";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -106,7 +106,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
                 {createdDate ? format(createdDate, "dd/MM/yyyy") : "Pick a date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 liquid-glass-strong rounded-xl border-border" align="start">
               <Calendar mode="single" selected={createdDate} onSelect={(d) => d && setCreatedDate(d)} initialFocus />
             </PopoverContent>
           </Popover>
@@ -120,7 +120,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
       </div>
 
       <Field label="Technician Name">
-        <Input value={profile?.username || ""} readOnly className={`${fieldClass} opacity-70 cursor-not-allowed`} />
+        <Input value={profile?.username || ""} readOnly className={`${fieldClass} opacity-60 cursor-not-allowed`} />
       </Field>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -139,7 +139,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         <Field label="Priority *">
           <Select value={priority} onValueChange={(v) => setPriority(v as "Low" | "Medium" | "High")}>
             <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
-            <SelectContent>
+            <SelectContent className="liquid-glass-strong rounded-xl border-border">
               <SelectItem value="Low">🟢 Low</SelectItem>
               <SelectItem value="Medium">🟡 Medium</SelectItem>
               <SelectItem value="High">🔴 High</SelectItem>
@@ -149,7 +149,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         <Field label="Issue Category *">
           <Select value={issueCategory} onValueChange={handleCategoryChange}>
             <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
-            <SelectContent>
+            <SelectContent className="liquid-glass-strong rounded-xl border-border">
               {Object.keys(ISSUE_CATEGORIES).map((cat) => (
                 <SelectItem key={cat} value={cat}>{cat}</SelectItem>
               ))}
@@ -159,7 +159,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         <Field label="Sub-category">
           <Select value={subCategory} onValueChange={(v) => { setSubCategory(v); setOtherSubCategory(""); }} disabled={!issueCategory || issueCategory === "Other"}>
             <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
-            <SelectContent>
+            <SelectContent className="liquid-glass-strong rounded-xl border-border">
               {subCategories.map((sub) => (
                 <SelectItem key={sub} value={sub}>{sub}</SelectItem>
               ))}
@@ -184,7 +184,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         <Textarea placeholder="Describe the issue..." value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={3} maxLength={2000} className={`${fieldClass} resize-none`} />
       </Field>
 
-      <Button type="submit" disabled={submitting || !userName.trim() || !issueCategory || !priority} className="w-full h-11 font-semibold text-sm tracking-wide">
+      <Button type="submit" disabled={submitting || !userName.trim() || !issueCategory || !priority} className="w-full h-11 font-semibold text-sm tracking-wide rounded-xl">
         {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : success ? <><CheckCircle2 className="mr-2 h-4 w-4" /> Ticket Created!</> : <><Send className="mr-2 h-4 w-4" /> Submit Ticket</>}
       </Button>
     </form>

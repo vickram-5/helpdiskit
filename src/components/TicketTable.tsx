@@ -46,17 +46,18 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
   }, [tickets, search, filterPriority, filterStatus]);
 
   const isAdmin = role === "admin";
+  const fieldClass = "bg-secondary/30 border-border/50 backdrop-blur-sm rounded-xl";
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search ID, user, category..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50 border-border rounded-xl" />
+          <Input placeholder="Search ID, user, category..." value={search} onChange={(e) => setSearch(e.target.value)} className={`pl-9 ${fieldClass}`} />
         </div>
         <Select value={filterPriority} onValueChange={setFilterPriority}>
-          <SelectTrigger className="w-full sm:w-36 bg-secondary/50 border-border rounded-xl"><SelectValue /></SelectTrigger>
-          <SelectContent>
+          <SelectTrigger className={`w-full sm:w-36 ${fieldClass}`}><SelectValue /></SelectTrigger>
+          <SelectContent className="liquid-glass-strong rounded-xl border-border">
             <SelectItem value="All">All Priorities</SelectItem>
             <SelectItem value="High">🔴 High</SelectItem>
             <SelectItem value="Medium">🟡 Medium</SelectItem>
@@ -64,8 +65,8 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full sm:w-32 bg-secondary/50 border-border rounded-xl"><SelectValue /></SelectTrigger>
-          <SelectContent>
+          <SelectTrigger className={`w-full sm:w-32 ${fieldClass}`}><SelectValue /></SelectTrigger>
+          <SelectContent className="liquid-glass-strong rounded-xl border-border">
             <SelectItem value="All">All Status</SelectItem>
             <SelectItem value="Open">Open</SelectItem>
             <SelectItem value="Closed">Closed</SelectItem>
@@ -79,10 +80,10 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
           <p className="text-sm">No tickets found</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-border overflow-x-auto">
+        <div className="rounded-2xl border border-border/50 overflow-x-auto liquid-glass-subtle">
           <Table>
             <TableHeader>
-              <TableRow className="bg-secondary/30 hover:bg-secondary/30 border-b border-border">
+              <TableRow className="hover:bg-transparent border-b border-border/50">
                 {["Sl", "Request ID", "Date", "User", "Category", "Priority", "Technician", "Status", "Effort", ...(isAdmin ? ["Actions"] : [])].map((h) => (
                   <TableHead key={h} className="font-semibold text-xs uppercase tracking-wider text-muted-foreground whitespace-nowrap">{h}</TableHead>
                 ))}
@@ -90,7 +91,7 @@ const TicketTable = ({ tickets, onEdit, onDelete }: TicketTableProps) => {
             </TableHeader>
             <TableBody>
               {filtered.map((t) => (
-                <TableRow key={t.id} className="hover:bg-secondary/20 transition-colors border-b border-border/50">
+                <TableRow key={t.id} className="hover:bg-secondary/20 transition-colors border-b border-border/30">
                   <TableCell className="font-mono text-xs">{t.sl_no}</TableCell>
                   <TableCell className="font-mono text-xs text-primary">{t.request_id}</TableCell>
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{t.created_date ? t.created_date.split('-').reverse().join('-') : ''}</TableCell>

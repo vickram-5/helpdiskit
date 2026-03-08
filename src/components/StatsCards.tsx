@@ -6,7 +6,6 @@ interface StatsCardsProps {
 }
 
 const StatsCards = ({ tickets }: StatsCardsProps) => {
-  // Filter tickets for current month only
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
@@ -24,18 +23,18 @@ const StatsCards = ({ tickets }: StatsCardsProps) => {
   const monthName = now.toLocaleString("default", { month: "short" });
 
   const stats = [
-    { label: `Total (${monthName})`, value: total, icon: TicketIcon, color: "text-primary", glow: "glow-primary" },
-    { label: "High Priority", value: high, icon: AlertTriangle, color: "text-priority-high", glow: "" },
-    { label: "Open", value: open, icon: Clock, color: "text-status-open", glow: "" },
-    { label: "Resolved", value: closed, icon: CheckCircle2, color: "text-status-closed", glow: "" },
+    { label: `Total (${monthName})`, value: total, icon: TicketIcon, color: "text-primary" },
+    { label: "High Priority", value: high, icon: AlertTriangle, color: "text-priority-high" },
+    { label: "Open", value: open, icon: Clock, color: "text-status-open" },
+    { label: "Resolved", value: closed, icon: CheckCircle2, color: "text-status-closed" },
   ];
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat) => (
-        <div key={stat.label} className={`glass-card glass-card-hover rounded-2xl p-5 transition-all cursor-default ${stat.glow}`}>
+        <div key={stat.label} className="liquid-glass liquid-glass-hover rounded-2xl p-5 transition-all cursor-default">
           <div className="flex items-center gap-3">
-            <div className={`h-10 w-10 rounded-xl bg-secondary flex items-center justify-center`}>
+            <div className="h-10 w-10 rounded-xl bg-secondary/30 backdrop-blur-sm flex items-center justify-center">
               <stat.icon className={`h-5 w-5 ${stat.color}`} />
             </div>
             <div>
