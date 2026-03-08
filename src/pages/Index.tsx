@@ -131,7 +131,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative">
-      <LiquidBackground variant="dark" />
+      <LiquidBackground variant="light" />
       <AppSidebar activeView={activeView} onViewChange={setActiveView} />
 
       <div className="ml-[180px] relative z-[1]">
