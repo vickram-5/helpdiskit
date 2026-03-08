@@ -111,19 +111,21 @@
   }
 
   .glass-card-hover:hover {
-    border-color: hsla(195, 80%, 55%, 0.4);
+    background: hsla(0, 0%, 100%, 0.42);
+    border-color: hsla(0, 0%, 100%, 0.55);
     box-shadow:
-      0 8px 32px hsla(195, 70%, 50%, 0.12),
-      inset 0 1px 0 hsla(0, 0%, 100%, 0.6);
+      0 4px 24px hsla(210, 30%, 50%, 0.1),
+      0 0 0 0.5px hsla(0, 0%, 100%, 0.4) inset,
+      inset 0 1px 0 hsla(0, 0%, 100%, 0.7);
   }
 
   .glow-primary {
-    box-shadow: 0 0 50px -15px hsla(195, 90%, 50%, 0.15),
-                0 0 80px -25px hsla(195, 90%, 50%, 0.08);
+    box-shadow: 0 0 40px -12px hsla(195, 90%, 50%, 0.1),
+                0 0 0 0.5px hsla(0, 0%, 100%, 0.3) inset;
   }
 
   .glow-accent {
-    box-shadow: 0 0 40px -10px hsla(210, 85%, 55%, 0.12);
+    box-shadow: 0 0 30px -8px hsla(210, 85%, 55%, 0.08);
   }
 
   .gradient-text {
