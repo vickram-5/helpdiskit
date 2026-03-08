@@ -159,7 +159,7 @@ const Index = () => {
           {renderContent()}
         </main>
 
-        <footer className="border-t border-border py-4 text-center text-[10px] text-muted-foreground">
+        <footer className="py-4 text-center text-[10px] text-muted-foreground">
           © 2026 CyberVibe Global Solutions Pvt Ltd. All rights reserved.
         </footer>
       </div>
