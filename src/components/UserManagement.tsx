@@ -91,7 +91,7 @@ const UserManagement = () => {
     u.full_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const fieldClass = "bg-secondary/30 border-border/50 backdrop-blur-sm rounded-xl";
+  const fieldClass = "bg-secondary/40 rounded-xl";
 
   return (
     <div className="space-y-4">
@@ -113,10 +113,10 @@ const UserManagement = () => {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border/50 overflow-x-auto liquid-glass-subtle">
+      <div className="rounded-2xl overflow-x-auto liquid-glass-subtle">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-b border-border/50">
+            <TableRow className="hover:bg-transparent">
               <TableHead className="text-xs font-medium text-muted-foreground">Username</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground">Display Name</TableHead>
               <TableHead className="text-xs font-medium text-muted-foreground">Role</TableHead>
@@ -126,7 +126,7 @@ const UserManagement = () => {
           </TableHeader>
           <TableBody>
             {filteredUsers.map((u) => (
-              <TableRow key={u.user_id} className="hover:bg-secondary/20 transition-colors border-b border-border/30">
+              <TableRow key={u.user_id} className="hover:bg-secondary/30 transition-colors">
                 <TableCell className="font-medium text-primary text-sm">{u.username}</TableCell>
                 <TableCell className="text-sm">{u.full_name}</TableCell>
                 <TableCell>
@@ -138,7 +138,7 @@ const UserManagement = () => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-status-closed/15 text-status-closed border-status-closed/30 rounded-md text-[10px]">
+                  <Badge className="bg-status-closed/12 text-status-closed border-status-closed/20 rounded-md text-[10px]">
                     Active
                   </Badge>
                 </TableCell>
@@ -159,7 +159,7 @@ const UserManagement = () => {
       </div>
 
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
-        <DialogContent className="liquid-glass-strong rounded-2xl border-border">
+        <DialogContent className="liquid-glass-strong rounded-2xl">
           <DialogHeader><DialogTitle>Add New User</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
@@ -178,7 +178,7 @@ const UserManagement = () => {
               <label className="text-xs font-medium text-muted-foreground">Role</label>
               <Select value={role} onValueChange={setRole}>
                 <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
-                <SelectContent className="liquid-glass-strong rounded-xl border-border">
+                <SelectContent className="liquid-glass-strong rounded-xl">
                   <SelectItem value="technician">Technician</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
@@ -196,7 +196,7 @@ const UserManagement = () => {
       </Dialog>
 
       <AlertDialog open={!!deleteUser} onOpenChange={(o) => !o && setDeleteUser(null)}>
-        <AlertDialogContent className="liquid-glass-strong rounded-2xl border-border">
+        <AlertDialogContent className="liquid-glass-strong rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete User</AlertDialogTitle>
             <AlertDialogDescription>

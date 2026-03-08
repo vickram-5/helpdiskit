@@ -131,13 +131,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative">
-      <LiquidBackground />
+      <LiquidBackground variant="light" />
       <AppSidebar activeView={activeView} onViewChange={setActiveView} />
 
-      {/* Main content area */}
       <div className="ml-[160px] relative z-[1]">
-        {/* Top header */}
-        <header className="liquid-glass-strong sticky top-0 z-10 border-b-0">
+        <header className="liquid-glass-strong sticky top-0 z-10">
           <div className="px-6 py-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">{getGreeting()}</p>
@@ -145,7 +143,7 @@ const Index = () => {
               <p className="text-[11px] text-muted-foreground">Vindhya IT Support Hub — Efficient & AI-Driven</p>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl border-border hover:border-primary/30 transition-all text-xs">
+              <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl transition-all text-xs">
                 <Download className="mr-1.5 h-3.5 w-3.5" /> Export CSV
               </Button>
               <Button variant="ghost" size="sm" onClick={signOut} className="rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all text-xs">
@@ -172,7 +170,7 @@ const Index = () => {
       />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <AlertDialogContent className="liquid-glass-strong rounded-2xl border-border">
+        <AlertDialogContent className="liquid-glass-strong rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Ticket</AlertDialogTitle>
             <AlertDialogDescription>

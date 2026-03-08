@@ -6,51 +6,51 @@
 
 @layer base {
   :root {
-    --background: 230 25% 5%;
-    --foreground: 0 0% 98%;
+    --background: 210 30% 97%;
+    --foreground: 210 20% 15%;
 
-    --card: 230 20% 10% / 0.3;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100% / 0.55;
+    --card-foreground: 210 20% 15%;
 
-    --popover: 230 20% 10% / 0.7;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100% / 0.75;
+    --popover-foreground: 210 20% 15%;
 
-    --primary: 195 100% 50%;
-    --primary-foreground: 230 25% 5%;
+    --primary: 200 85% 48%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 230 18% 18% / 0.4;
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 200 40% 92% / 0.5;
+    --secondary-foreground: 210 15% 35%;
 
-    --muted: 230 15% 15% / 0.5;
-    --muted-foreground: 220 10% 55%;
+    --muted: 200 25% 93% / 0.6;
+    --muted-foreground: 210 12% 50%;
 
-    --accent: 270 80% 65%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 210 80% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 80% 55%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 100% / 0.08;
-    --input: 0 0% 100% / 0.08;
-    --ring: 195 100% 50%;
+    --border: 200 40% 80% / 0.3;
+    --input: 200 40% 80% / 0.3;
+    --ring: 200 85% 48%;
 
     --radius: 1rem;
 
-    --priority-high: 0 80% 55%;
-    --priority-medium: 40 95% 55%;
-    --priority-low: 150 70% 45%;
+    --priority-high: 0 75% 50%;
+    --priority-medium: 40 90% 50%;
+    --priority-low: 150 65% 40%;
 
-    --status-open: 195 100% 50%;
-    --status-closed: 150 70% 45%;
+    --status-open: 200 85% 48%;
+    --status-closed: 150 65% 40%;
 
-    --sidebar-background: 230 20% 8% / 0.4;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 195 100% 50%;
-    --sidebar-primary-foreground: 230 25% 5%;
-    --sidebar-accent: 230 18% 14% / 0.4;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 100% / 0.08;
-    --sidebar-ring: 195 100% 50%;
+    --sidebar-background: 0 0% 100% / 0.45;
+    --sidebar-foreground: 210 20% 15%;
+    --sidebar-primary: 200 85% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 200 40% 92% / 0.5;
+    --sidebar-accent-foreground: 210 20% 15%;
+    --sidebar-border: 200 40% 80% / 0.2;
+    --sidebar-ring: 200 85% 48%;
   }
 }
 
@@ -67,63 +67,62 @@
 
 @layer utilities {
   .liquid-glass {
-    background: hsla(230, 20%, 15%, 0.25);
-    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    background: hsla(0, 0%, 100%, 0.45);
+    border: 1px solid hsla(200, 60%, 80%, 0.25);
     backdrop-filter: blur(24px) saturate(1.4);
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
     box-shadow:
-      0 8px 32px hsla(0, 0%, 0%, 0.3),
-      inset 0 1px 0 hsla(0, 0%, 100%, 0.06);
+      0 4px 24px hsla(200, 60%, 50%, 0.06),
+      inset 0 1px 0 hsla(0, 0%, 100%, 0.5);
   }
 
   .liquid-glass-strong {
-    background: hsla(230, 20%, 12%, 0.45);
-    border: 1px solid hsla(0, 0%, 100%, 0.12);
+    background: hsla(0, 0%, 100%, 0.55);
+    border: 1px solid hsla(200, 60%, 75%, 0.25);
     backdrop-filter: blur(40px) saturate(1.6);
     -webkit-backdrop-filter: blur(40px) saturate(1.6);
     box-shadow:
-      0 8px 32px hsla(0, 0%, 0%, 0.4),
-      inset 0 1px 0 hsla(0, 0%, 100%, 0.08);
+      0 8px 32px hsla(200, 60%, 50%, 0.08),
+      inset 0 1px 0 hsla(0, 0%, 100%, 0.6);
   }
 
   .liquid-glass-subtle {
-    background: hsla(230, 20%, 18%, 0.15);
-    border: 1px solid hsla(0, 0%, 100%, 0.06);
+    background: hsla(0, 0%, 100%, 0.3);
+    border: 1px solid hsla(200, 60%, 80%, 0.15);
     backdrop-filter: blur(16px) saturate(1.2);
     -webkit-backdrop-filter: blur(16px) saturate(1.2);
   }
 
   .liquid-glass:hover,
   .liquid-glass-hover:hover {
-    border-color: hsla(0, 0%, 100%, 0.18);
+    border-color: hsla(200, 70%, 65%, 0.35);
     box-shadow:
-      0 8px 40px hsla(0, 0%, 0%, 0.35),
-      inset 0 1px 0 hsla(0, 0%, 100%, 0.1);
+      0 8px 32px hsla(200, 60%, 50%, 0.1),
+      inset 0 1px 0 hsla(0, 0%, 100%, 0.6);
   }
 
-  /* Legacy aliases */
   .glass-card {
     @apply liquid-glass;
   }
 
   .glass-card-hover:hover {
-    border-color: hsla(0, 0%, 100%, 0.18);
+    border-color: hsla(200, 70%, 65%, 0.35);
     box-shadow:
-      0 8px 40px hsla(0, 0%, 0%, 0.35),
-      inset 0 1px 0 hsla(0, 0%, 100%, 0.1);
+      0 8px 32px hsla(200, 60%, 50%, 0.1),
+      inset 0 1px 0 hsla(0, 0%, 100%, 0.6);
   }
 
   .glow-primary {
-    box-shadow: 0 0 60px -15px hsla(195, 100%, 50%, 0.15),
-                0 0 100px -30px hsla(195, 100%, 50%, 0.08);
+    box-shadow: 0 0 50px -15px hsla(200, 85%, 50%, 0.12),
+                0 0 80px -25px hsla(200, 85%, 50%, 0.06);
   }
 
   .glow-accent {
-    box-shadow: 0 0 40px -10px hsla(270, 80%, 65%, 0.15);
+    box-shadow: 0 0 40px -10px hsla(210, 80%, 55%, 0.1);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, hsl(195, 100%, 55%), hsl(270, 80%, 70%));
+    background: linear-gradient(135deg, hsl(200, 85%, 48%), hsl(210, 80%, 55%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -138,7 +137,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, hsla(195, 100%, 50%, 0.4), hsla(270, 80%, 65%, 0.2));
+    background: linear-gradient(135deg, hsla(200, 85%, 50%, 0.3), hsla(210, 80%, 55%, 0.15));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -147,17 +146,16 @@
 
   .mesh-bg {
     background-image:
-      radial-gradient(at 20% 20%, hsla(195, 100%, 50%, 0.06) 0px, transparent 50%),
-      radial-gradient(at 80% 80%, hsla(270, 80%, 65%, 0.04) 0px, transparent 50%),
-      radial-gradient(at 50% 0%, hsla(195, 100%, 50%, 0.03) 0px, transparent 40%);
+      radial-gradient(at 20% 20%, hsla(200, 80%, 70%, 0.1) 0px, transparent 50%),
+      radial-gradient(at 80% 80%, hsla(210, 70%, 65%, 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 0%, hsla(200, 80%, 70%, 0.06) 0px, transparent 40%);
   }
 
   .dot-grid {
-    background-image: radial-gradient(hsla(220, 10%, 50%, 0.06) 1px, transparent 1px);
+    background-image: radial-gradient(hsla(210, 10%, 50%, 0.06) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
-  /* Smooth transitions for dialogs/modals */
   [data-state="open"] {
     animation: liquid-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -170,12 +168,10 @@
     from {
       opacity: 0;
       transform: scale(0.96) translateY(4px);
-      backdrop-filter: blur(0px);
     }
     to {
       opacity: 1;
       transform: scale(1) translateY(0);
-      backdrop-filter: blur(24px);
     }
   }
 

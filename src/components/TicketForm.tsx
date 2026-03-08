@@ -93,7 +93,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
     setSubmitting(false);
   };
 
-  const fieldClass = "bg-secondary/30 border-border/50 backdrop-blur-sm focus:border-primary/50 rounded-xl transition-all";
+  const fieldClass = "bg-secondary/40 rounded-xl transition-all focus:ring-1 focus:ring-primary/30";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -106,7 +106,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
                 {createdDate ? format(createdDate, "dd/MM/yyyy") : "Pick a date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 liquid-glass-strong rounded-xl border-border" align="start">
+            <PopoverContent className="w-auto p-0 liquid-glass-strong rounded-xl" align="start">
               <Calendar mode="single" selected={createdDate} onSelect={(d) => d && setCreatedDate(d)} initialFocus />
             </PopoverContent>
           </Popover>
@@ -139,7 +139,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         <Field label="Priority *">
           <Select value={priority} onValueChange={(v) => setPriority(v as "Low" | "Medium" | "High")}>
             <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
-            <SelectContent className="liquid-glass-strong rounded-xl border-border">
+            <SelectContent className="liquid-glass-strong rounded-xl">
               <SelectItem value="Low">🟢 Low</SelectItem>
               <SelectItem value="Medium">🟡 Medium</SelectItem>
               <SelectItem value="High">🔴 High</SelectItem>
@@ -149,7 +149,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         <Field label="Issue Category *">
           <Select value={issueCategory} onValueChange={handleCategoryChange}>
             <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
-            <SelectContent className="liquid-glass-strong rounded-xl border-border">
+            <SelectContent className="liquid-glass-strong rounded-xl">
               {Object.keys(ISSUE_CATEGORIES).map((cat) => (
                 <SelectItem key={cat} value={cat}>{cat}</SelectItem>
               ))}
@@ -159,7 +159,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         <Field label="Sub-category">
           <Select value={subCategory} onValueChange={(v) => { setSubCategory(v); setOtherSubCategory(""); }} disabled={!issueCategory || issueCategory === "Other"}>
             <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
-            <SelectContent className="liquid-glass-strong rounded-xl border-border">
+            <SelectContent className="liquid-glass-strong rounded-xl">
               {subCategories.map((sub) => (
                 <SelectItem key={sub} value={sub}>{sub}</SelectItem>
               ))}

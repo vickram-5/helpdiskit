@@ -27,27 +27,25 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
   const inProgress = monthTickets.filter((t) => t.request_status === "In Progress").length;
   const resolved = monthTickets.filter((t) => t.request_status === "Closed" || t.request_status === "Resolved").length;
 
-  // Priority breakdown
   const low = monthTickets.filter((t) => t.priority === "Low").length;
   const medium = monthTickets.filter((t) => t.priority === "Medium").length;
   const high = monthTickets.filter((t) => t.priority === "High").length;
   const critical = monthTickets.filter((t) => (t.priority as string) === "Critical").length;
 
   const donutData = [
-    { name: "Open", value: open || 0, color: "hsl(195, 100%, 50%)" },
-    { name: "Resolved", value: resolved || 0, color: "hsl(150, 70%, 45%)" },
-    { name: "In Progress", value: inProgress || 0, color: "hsl(40, 95%, 55%)" },
+    { name: "Open", value: open || 0, color: "hsl(200, 85%, 48%)" },
+    { name: "Resolved", value: resolved || 0, color: "hsl(150, 65%, 40%)" },
+    { name: "In Progress", value: inProgress || 0, color: "hsl(40, 90%, 50%)" },
   ].filter(d => d.value > 0);
-  if (donutData.length === 0) donutData.push({ name: "Active", value: 0, color: "hsl(220, 10%, 25%)" });
+  if (donutData.length === 0) donutData.push({ name: "Active", value: 0, color: "hsl(200, 30%, 85%)" });
 
   const analyticsData = [
-    { name: "Low", value: low, color: "hsl(150, 70%, 45%)" },
-    { name: "Medium", value: medium, color: "hsl(40, 95%, 55%)" },
-    { name: "High", value: high, color: "hsl(0, 80%, 55%)" },
-    { name: "Critical", value: critical, color: "hsl(320, 80%, 55%)" },
+    { name: "Low", value: low, color: "hsl(150, 65%, 40%)" },
+    { name: "Medium", value: medium, color: "hsl(40, 90%, 50%)" },
+    { name: "High", value: high, color: "hsl(0, 75%, 50%)" },
+    { name: "Critical", value: critical, color: "hsl(320, 75%, 50%)" },
   ];
 
-  // Weekly trend (mock using recent ticket data)
   const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const weeklyData = weekdays.map((d, i) => ({
     name: d,
@@ -57,7 +55,6 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
     }).length,
   }));
 
-  // Technicians
   const techMap = new Map<string, number>();
   monthTickets.forEach((t) => {
     if (t.technician_name) techMap.set(t.technician_name, (techMap.get(t.technician_name) || 0) + 1);
@@ -65,30 +62,30 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
   const technicians = Array.from(techMap.entries()).map(([name, count]) => ({ name, count }));
   const totalResolved = resolved;
 
-  // Recent activity
   const recentTickets = [...tickets].sort((a, b) =>
     new Date(b.created_at || b.created_date).getTime() - new Date(a.created_at || a.created_date).getTime()
   ).slice(0, 5);
 
   const tooltipStyle = {
-    background: "hsla(230, 20%, 10%, 0.9)",
-    border: "1px solid hsla(0, 0%, 100%, 0.1)",
+    background: "hsla(0, 0%, 100%, 0.9)",
+    border: "1px solid hsla(200, 60%, 80%, 0.3)",
     borderRadius: "12px",
-    color: "hsl(0, 0%, 98%)",
+    color: "hsl(210, 20%, 20%)",
     backdropFilter: "blur(20px)",
     fontSize: "12px",
   };
 
+  const axisTickStyle = { fill: "hsl(210, 12%, 50%)", fontSize: 11 };
+
   const stats = [
-    { label: "TOTAL TICKETS", value: total, icon: TicketIcon, color: "text-primary", iconBg: "bg-primary/15" },
-    { label: "OPEN", value: open, icon: Clock, color: "text-status-open", iconBg: "bg-status-open/15" },
-    { label: "IN PROGRESS", value: inProgress, icon: AlertTriangle, color: "text-priority-medium", iconBg: "bg-priority-medium/15" },
-    { label: "RESOLVED", value: resolved, icon: CheckCircle2, color: "text-status-closed", iconBg: "bg-status-closed/15" },
+    { label: "TOTAL TICKETS", value: total, icon: TicketIcon, color: "text-primary", iconBg: "bg-primary/10" },
+    { label: "OPEN", value: open, icon: Clock, color: "text-status-open", iconBg: "bg-status-open/10" },
+    { label: "IN PROGRESS", value: inProgress, icon: AlertTriangle, color: "text-priority-medium", iconBg: "bg-priority-medium/10" },
+    { label: "RESOLVED", value: resolved, icon: CheckCircle2, color: "text-status-closed", iconBg: "bg-status-closed/10" },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (
           <div key={s.label} className="liquid-glass liquid-glass-hover rounded-2xl p-4 transition-all">
@@ -105,9 +102,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
         ))}
       </div>
 
-      {/* Active Critical + Ticket Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Donut chart */}
         <div className="liquid-glass rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <span className="h-2 w-2 rounded-full bg-status-closed animate-pulse" />
@@ -128,7 +123,6 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
           </div>
         </div>
 
-        {/* Analytics bar chart */}
         <div className="lg:col-span-2 liquid-glass rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -146,9 +140,9 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={analyticsData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsla(0,0%,100%,0.04)" />
-              <XAxis dataKey="name" tick={{ fill: "hsl(220,10%,55%)", fontSize: 11 }} />
-              <YAxis tick={{ fill: "hsl(220,10%,55%)", fontSize: 11 }} allowDecimals={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsla(200, 30%, 80%, 0.3)" />
+              <XAxis dataKey="name" tick={axisTickStyle} />
+              <YAxis tick={axisTickStyle} allowDecimals={false} />
               <Tooltip contentStyle={tooltipStyle} />
               <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                 {analyticsData.map((e, i) => <Cell key={i} fill={e.color} />)}
@@ -158,18 +152,16 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
         </div>
       </div>
 
-      {/* Support Team + Weekly Trend + Status Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Support Team */}
         <div className="liquid-glass rounded-2xl p-5">
           <h3 className="text-sm font-semibold mb-4">Your Support Team</h3>
           <div className="flex gap-1 mb-4">
             {technicians.length > 0 ? technicians.slice(0, 5).map((t, i) => (
-              <div key={i} className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[10px] font-bold border border-primary/30">
+              <div key={i} className="h-8 w-8 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold border border-primary/20">
                 {t.name.charAt(0).toUpperCase()}
               </div>
             )) : (
-              <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[10px] font-bold border border-primary/30">A</div>
+              <div className="h-8 w-8 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold border border-primary/20">A</div>
             )}
           </div>
           <div className="space-y-2">
@@ -177,14 +169,13 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
               <span className="text-muted-foreground">Agent Performance</span>
               <span className="font-mono font-semibold">{total > 0 ? Math.round((totalResolved / total) * 100) : 0}%</span>
             </div>
-            <div className="h-1.5 rounded-full bg-secondary/50 overflow-hidden">
+            <div className="h-1.5 rounded-full bg-secondary/80 overflow-hidden">
               <div className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all" style={{ width: `${total > 0 ? (totalResolved / total) * 100 : 0}%` }} />
             </div>
             <p className="text-[10px] text-muted-foreground">{technicians.length || 1} active agents · {totalResolved} resolved</p>
           </div>
         </div>
 
-        {/* Weekly Trend */}
         <div className="liquid-glass rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="h-4 w-4 text-primary" />
@@ -192,16 +183,15 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
           </div>
           <ResponsiveContainer width="100%" height={160}>
             <LineChart data={weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsla(0,0%,100%,0.04)" />
-              <XAxis dataKey="name" tick={{ fill: "hsl(220,10%,55%)", fontSize: 10 }} />
-              <YAxis tick={{ fill: "hsl(220,10%,55%)", fontSize: 10 }} allowDecimals={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsla(200, 30%, 80%, 0.3)" />
+              <XAxis dataKey="name" tick={{ fill: "hsl(210, 12%, 50%)", fontSize: 10 }} />
+              <YAxis tick={{ fill: "hsl(210, 12%, 50%)", fontSize: 10 }} allowDecimals={false} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Line type="monotone" dataKey="tickets" stroke="hsl(195, 100%, 50%)" strokeWidth={2} dot={{ r: 3, fill: "hsl(195, 100%, 50%)" }} />
+              <Line type="monotone" dataKey="tickets" stroke="hsl(200, 85%, 48%)" strokeWidth={2} dot={{ r: 3, fill: "hsl(200, 85%, 48%)" }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Status Distribution */}
         <div className="liquid-glass rounded-2xl p-5">
           <h3 className="text-sm font-semibold mb-4">Status Distribution</h3>
           <ResponsiveContainer width="100%" height={160}>
@@ -216,7 +206,6 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
         </div>
       </div>
 
-      {/* Priority Distribution + Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 liquid-glass rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-1">
@@ -237,7 +226,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
               </div>
             ))}
           </div>
-          <div className="mt-3 h-3 rounded-full bg-secondary/30 overflow-hidden flex">
+          <div className="mt-3 h-3 rounded-full bg-secondary/60 overflow-hidden flex">
             {total > 0 && [
               { v: low, c: "bg-status-closed" },
               { v: medium, c: "bg-priority-medium" },
@@ -249,7 +238,6 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
           </div>
         </div>
 
-        {/* Recent Activity */}
         <div className="liquid-glass rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="h-4 w-4 text-accent" />
