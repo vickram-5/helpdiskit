@@ -44,11 +44,11 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
 
   if (!ticket) return null;
 
-  const fieldClass = "bg-secondary/30 border-border/50 backdrop-blur-sm rounded-xl";
+  const fieldClass = "bg-secondary/40 rounded-xl";
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="liquid-glass-strong rounded-2xl border-border">
+      <DialogContent className="liquid-glass-strong rounded-2xl">
         <DialogHeader>
           <DialogTitle>Edit {ticket.request_id}</DialogTitle>
         </DialogHeader>
@@ -57,7 +57,7 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
             <label className="text-xs font-medium text-muted-foreground">Status</label>
             <Select value={status} onValueChange={setStatus}>
               <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
-              <SelectContent className="liquid-glass-strong rounded-xl border-border">
+              <SelectContent className="liquid-glass-strong rounded-xl">
                 <SelectItem value="Open">Open</SelectItem>
                 <SelectItem value="Closed">Closed</SelectItem>
               </SelectContent>
@@ -67,7 +67,7 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
             <label className="text-xs font-medium text-muted-foreground">Priority</label>
             <Select value={priority} onValueChange={setPriority}>
               <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
-              <SelectContent className="liquid-glass-strong rounded-xl border-border">
+              <SelectContent className="liquid-glass-strong rounded-xl">
                 <SelectItem value="Low">🟢 Low</SelectItem>
                 <SelectItem value="Medium">🟡 Medium</SelectItem>
                 <SelectItem value="High">🔴 High</SelectItem>
