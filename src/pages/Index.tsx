@@ -137,7 +137,7 @@ const Index = () => {
       {/* Main content area */}
       <div className="ml-[160px] relative z-[1]">
         {/* Top header */}
-        <header className="liquid-glass-strong sticky top-0 z-10 border-b border-border">
+        <header className="liquid-glass-strong sticky top-0 z-10 border-b-0">
           <div className="px-6 py-4 flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground">{getGreeting()}</p>
@@ -159,7 +159,7 @@ const Index = () => {
           {renderContent()}
         </main>
 
-        <footer className="border-t border-border py-4 text-center text-[10px] text-muted-foreground">
+        <footer className="py-4 text-center text-[10px] text-muted-foreground">
           © 2026 CyberVibe Global Solutions Pvt Ltd. All rights reserved.
         </footer>
       </div>

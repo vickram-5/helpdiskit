@@ -31,7 +31,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[160px] z-20 liquid-glass-strong border-r border-border flex flex-col">
+    <aside className="fixed left-0 top-0 bottom-0 w-[160px] z-20 liquid-glass-strong border-r-0 flex flex-col">
       <div className="p-4 flex items-center gap-2">
         <img src={logo} alt="CyberVibe" className="h-9" />
       </div>
