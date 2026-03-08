@@ -21,15 +21,16 @@ const DashboardCharts = ({ tickets }: DashboardChartsProps) => {
   ];
 
   const tooltipStyle = {
-    background: "hsl(230, 20%, 10%)",
-    border: "1px solid hsl(230, 15%, 20%)",
+    background: "hsla(230, 20%, 10%, 0.85)",
+    border: "1px solid hsla(0, 0%, 100%, 0.1)",
     borderRadius: "12px",
-    color: "hsl(220, 20%, 93%)",
+    color: "hsl(0, 0%, 98%)",
+    backdropFilter: "blur(20px)",
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="glass-card rounded-2xl p-6">
+      <div className="liquid-glass rounded-2xl p-6">
         <h3 className="text-sm font-semibold mb-4 gradient-text">Ticket Status</h3>
         <ResponsiveContainer width="100%" height={240}>
           <PieChart>
@@ -44,13 +45,13 @@ const DashboardCharts = ({ tickets }: DashboardChartsProps) => {
         </ResponsiveContainer>
       </div>
 
-      <div className="glass-card rounded-2xl p-6">
+      <div className="liquid-glass rounded-2xl p-6">
         <h3 className="text-sm font-semibold mb-4 gradient-text">Priority Distribution</h3>
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={priorityData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(230, 15%, 15%)" />
-            <XAxis dataKey="name" tick={{ fill: "hsl(220, 10%, 50%)", fontSize: 12 }} />
-            <YAxis tick={{ fill: "hsl(220, 10%, 50%)", fontSize: 12 }} allowDecimals={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsla(0, 0%, 100%, 0.05)" />
+            <XAxis dataKey="name" tick={{ fill: "hsl(220, 10%, 55%)", fontSize: 12 }} />
+            <YAxis tick={{ fill: "hsl(220, 10%, 55%)", fontSize: 12 }} allowDecimals={false} />
             <Tooltip contentStyle={tooltipStyle} />
             <Bar dataKey="value" radius={[8, 8, 0, 0]}>
               {priorityData.map((entry, i) => (

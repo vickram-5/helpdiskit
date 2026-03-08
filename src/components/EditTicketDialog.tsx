@@ -44,9 +44,11 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
 
   if (!ticket) return null;
 
+  const fieldClass = "bg-secondary/30 border-border/50 backdrop-blur-sm rounded-xl";
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="bg-card border-border">
+      <DialogContent className="liquid-glass-strong rounded-2xl border-border">
         <DialogHeader>
           <DialogTitle>Edit {ticket.request_id}</DialogTitle>
         </DialogHeader>
@@ -54,8 +56,8 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Status</label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="bg-secondary/50 border-border"><SelectValue /></SelectTrigger>
-              <SelectContent>
+              <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
+              <SelectContent className="liquid-glass-strong rounded-xl border-border">
                 <SelectItem value="Open">Open</SelectItem>
                 <SelectItem value="Closed">Closed</SelectItem>
               </SelectContent>
@@ -64,8 +66,8 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Priority</label>
             <Select value={priority} onValueChange={setPriority}>
-              <SelectTrigger className="bg-secondary/50 border-border"><SelectValue /></SelectTrigger>
-              <SelectContent>
+              <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
+              <SelectContent className="liquid-glass-strong rounded-xl border-border">
                 <SelectItem value="Low">🟢 Low</SelectItem>
                 <SelectItem value="Medium">🟡 Medium</SelectItem>
                 <SelectItem value="High">🔴 High</SelectItem>
@@ -74,16 +76,16 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Technician Name</label>
-            <Input value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} className="bg-secondary/50 border-border" />
+            <Input value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} className={fieldClass} />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">End Time</label>
-            <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="bg-secondary/50 border-border" />
+            <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={fieldClass} />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave} disabled={saving}>Save Changes</Button>
+          <Button variant="outline" onClick={onClose} className="rounded-xl">Cancel</Button>
+          <Button onClick={handleSave} disabled={saving} className="rounded-xl">Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

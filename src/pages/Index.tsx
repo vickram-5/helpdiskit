@@ -7,7 +7,7 @@ import StatsCards from "@/components/StatsCards";
 import DashboardCharts from "@/components/DashboardCharts";
 import EditTicketDialog from "@/components/EditTicketDialog";
 import UserManagement from "@/components/UserManagement";
-import NetworkBackground from "@/components/NetworkBackground";
+import LiquidBackground from "@/components/LiquidBackground";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Download, Users, LayoutDashboard, PlusCircle, History } from "lucide-react";
@@ -62,11 +62,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background mesh-bg relative">
-      <NetworkBackground />
+    <div className="min-h-screen relative">
+      <LiquidBackground />
 
       {/* Header */}
-      <header className="border-b border-border glass-card sticky top-0 z-10">
+      <header className="liquid-glass-strong sticky top-0 z-10 border-b border-border">
         <div className="container max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <img src={logo} alt="Vindhya E-Infomedia" className="h-10" />
@@ -92,20 +92,20 @@ const Index = () => {
 
         {isAdmin ? (
           <Tabs defaultValue="tickets" className="space-y-6">
-            <TabsList className="glass-card border border-border rounded-xl p-1 h-auto">
-              <TabsTrigger value="tickets" className="rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all">
+            <TabsList className="liquid-glass rounded-2xl p-1.5 h-auto border border-border">
+              <TabsTrigger value="tickets" className="rounded-xl data-[state=active]:bg-primary/15 data-[state=active]:text-primary transition-all">
                 <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> Tickets
               </TabsTrigger>
-              <TabsTrigger value="dashboard" className="rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all">
+              <TabsTrigger value="dashboard" className="rounded-xl data-[state=active]:bg-primary/15 data-[state=active]:text-primary transition-all">
                 <LayoutDashboard className="mr-1.5 h-3.5 w-3.5" /> Dashboard
               </TabsTrigger>
-              <TabsTrigger value="users" className="rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all">
+              <TabsTrigger value="users" className="rounded-xl data-[state=active]:bg-primary/15 data-[state=active]:text-primary transition-all">
                 <Users className="mr-1.5 h-3.5 w-3.5" /> Users
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="tickets" className="space-y-8">
-              <div className="glass-card rounded-2xl p-6">
+              <div className="liquid-glass rounded-2xl p-6">
                 <h2 className="text-base font-semibold mb-1">All Tickets</h2>
                 <p className="text-xs text-muted-foreground mb-5">Manage all support requests</p>
                 <TicketTable tickets={tickets} onEdit={setEditTicket} onDelete={setDeleteTarget} />
@@ -117,25 +117,25 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="users">
-              <div className="glass-card rounded-2xl p-6">
+              <div className="liquid-glass rounded-2xl p-6">
                 <UserManagement />
               </div>
             </TabsContent>
           </Tabs>
         ) : (
           <Tabs defaultValue="raise" className="space-y-6">
-            <TabsList className="glass-card border border-border rounded-xl p-1 h-auto">
-              <TabsTrigger value="raise" className="rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all">
+            <TabsList className="liquid-glass rounded-2xl p-1.5 h-auto border border-border">
+              <TabsTrigger value="raise" className="rounded-xl data-[state=active]:bg-primary/15 data-[state=active]:text-primary transition-all">
                 <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> Raise Ticket
               </TabsTrigger>
-              <TabsTrigger value="history" className="rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all">
+              <TabsTrigger value="history" className="rounded-xl data-[state=active]:bg-primary/15 data-[state=active]:text-primary transition-all">
                 <History className="mr-1.5 h-3.5 w-3.5" /> My History
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="raise">
               <div className="max-w-2xl mx-auto">
-                <div className="glass-card rounded-2xl p-6 glow-primary">
+                <div className="liquid-glass rounded-2xl p-6 glow-primary">
                   <h2 className="text-base font-semibold mb-1 gradient-text">Raise a Ticket</h2>
                   <p className="text-xs text-muted-foreground mb-5">Submit a new support request</p>
                   <TicketForm onTicketCreated={handleTicketCreated} />
@@ -144,7 +144,7 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="history">
-              <div className="glass-card rounded-2xl p-6">
+              <div className="liquid-glass rounded-2xl p-6">
                 <h2 className="text-base font-semibold mb-1">My Tickets</h2>
                 <p className="text-xs text-muted-foreground mb-5">Your ticket history</p>
                 <TicketTable tickets={tickets} />
@@ -162,7 +162,7 @@ const Index = () => {
       />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <AlertDialogContent className="glass-card border-border rounded-2xl">
+        <AlertDialogContent className="liquid-glass-strong rounded-2xl border-border">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Ticket</AlertDialogTitle>
             <AlertDialogDescription>

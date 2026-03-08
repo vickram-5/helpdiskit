@@ -84,7 +84,7 @@ const UserManagement = () => {
     setDeleteUser(null);
   };
 
-  const fieldClass = "bg-secondary/50 border-border";
+  const fieldClass = "bg-secondary/30 border-border/50 backdrop-blur-sm rounded-xl";
 
   return (
     <div className="space-y-4">
@@ -93,15 +93,15 @@ const UserManagement = () => {
           <h2 className="text-base font-semibold">User Management</h2>
           <p className="text-xs text-muted-foreground">Add or remove technician accounts</p>
         </div>
-        <Button size="sm" onClick={() => setShowAdd(true)}>
+        <Button size="sm" onClick={() => setShowAdd(true)} className="rounded-xl">
           <UserPlus className="mr-2 h-3.5 w-3.5" /> Add User
         </Button>
       </div>
 
-      <div className="rounded-lg border border-border overflow-x-auto">
+      <div className="rounded-2xl border border-border/50 overflow-x-auto liquid-glass-subtle">
         <Table>
           <TableHeader>
-            <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+            <TableRow className="hover:bg-transparent border-b border-border/50">
               <TableHead className="text-xs uppercase tracking-wider text-muted-foreground">Username</TableHead>
               <TableHead className="text-xs uppercase tracking-wider text-muted-foreground">Full Name</TableHead>
               <TableHead className="text-xs uppercase tracking-wider text-muted-foreground">Role</TableHead>
@@ -110,16 +110,16 @@ const UserManagement = () => {
           </TableHeader>
           <TableBody>
             {users.map((u) => (
-              <TableRow key={u.user_id}>
+              <TableRow key={u.user_id} className="hover:bg-secondary/20 transition-colors border-b border-border/30">
                 <TableCell className="font-medium">{u.username}</TableCell>
                 <TableCell className="text-muted-foreground">{u.full_name}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className={u.role === "admin" ? "bg-primary/10 text-primary border-primary/30" : "bg-secondary text-secondary-foreground"}>
+                  <Badge variant="outline" className={u.role === "admin" ? "bg-primary/10 text-primary border-primary/30 rounded-lg" : "bg-secondary/50 text-secondary-foreground rounded-lg"}>
                     {u.role}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeleteUser(u)}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteUser(u)}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </TableCell>
@@ -130,7 +130,7 @@ const UserManagement = () => {
       </div>
 
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="liquid-glass-strong rounded-2xl border-border">
           <DialogHeader><DialogTitle>Add New User</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
@@ -146,14 +146,10 @@ const UserManagement = () => {
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={fieldClass} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Full Name *</label>
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className={fieldClass} />
-            </div>
-            <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Role</label>
               <Select value={role} onValueChange={setRole}>
                 <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectContent className="liquid-glass-strong rounded-xl border-border">
                   <SelectItem value="technician">Technician</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
@@ -161,8 +157,8 @@ const UserManagement = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={loading || !password || !username || !fullName}>
+            <Button variant="outline" onClick={() => setShowAdd(false)} className="rounded-xl">Cancel</Button>
+            <Button onClick={handleCreate} disabled={loading || !password || !username || !fullName} className="rounded-xl">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Create User
             </Button>
@@ -171,7 +167,7 @@ const UserManagement = () => {
       </Dialog>
 
       <AlertDialog open={!!deleteUser} onOpenChange={(o) => !o && setDeleteUser(null)}>
-        <AlertDialogContent className="bg-card border-border">
+        <AlertDialogContent className="liquid-glass-strong rounded-2xl border-border">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete User</AlertDialogTitle>
             <AlertDialogDescription>
@@ -179,8 +175,8 @@ const UserManagement = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
