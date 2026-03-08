@@ -131,7 +131,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative">
-      <LiquidBackground variant="dark" />
+      <LiquidBackground variant="light" />
       <AppSidebar activeView={activeView} onViewChange={setActiveView} />
 
       <div className="ml-[180px] relative z-[1]">
@@ -143,7 +143,7 @@ const Index = () => {
               <p className="text-[11px] text-muted-foreground">Vindhya IT Support Hub — Efficient & AI-Driven</p>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary">
+              <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary bg-secondary/30">
                 <Download className="mr-1.5 h-3.5 w-3.5" /> Export CSV
               </Button>
               <Button variant="ghost" size="sm" onClick={signOut} className="rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all text-xs">

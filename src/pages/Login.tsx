@@ -27,13 +27,7 @@ const Login = () => {
       <LiquidBackground variant="light" />
 
       <div className="w-full max-w-md relative z-[1]">
-        <div className="rounded-3xl p-8 shadow-2xl" style={{
-          background: "hsla(20, 12%, 10%, 0.75)",
-          border: "1px solid hsla(25, 20%, 30%, 0.35)",
-          backdropFilter: "blur(40px) saturate(1.6)",
-          WebkitBackdropFilter: "blur(40px) saturate(1.6)",
-          boxShadow: "0 8px 40px hsla(20, 30%, 5%, 0.5), inset 0 1px 0 hsla(30, 20%, 40%, 0.1)",
-        }}>
+        <div className="rounded-3xl p-8 shadow-2xl liquid-glass-strong">
           <div className="flex flex-col items-center mb-8">
             <img src={logo} alt="Vindhya E-Infomedia" className="h-20 mb-5" />
             <p className="text-sm text-muted-foreground">IT Ticketing System</p>
@@ -48,7 +42,7 @@ const Login = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="h-12 rounded-xl transition-all bg-secondary/40 border-border text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-primary/30"
+                className="h-12 rounded-xl transition-all bg-secondary/40 border-border focus:ring-1 focus:ring-primary/30"
               />
             </div>
             <div className="space-y-2">
@@ -59,7 +53,7 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="h-12 rounded-xl transition-all bg-secondary/40 border-border text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-primary/30"
+                className="h-12 rounded-xl transition-all bg-secondary/40 border-border focus:ring-1 focus:ring-primary/30"
               />
             </div>
 
@@ -70,7 +64,7 @@ const Login = () => {
             )}
 
             <Button type="submit" disabled={loading} className="w-full h-12 font-semibold rounded-xl text-sm tracking-wide" style={{
-              background: "linear-gradient(135deg, hsl(25, 85%, 50%), hsl(35, 90%, 45%))",
+              background: "linear-gradient(135deg, hsl(195, 90%, 48%), hsl(210, 85%, 52%))",
               color: "white",
               border: "none",
             }}>
