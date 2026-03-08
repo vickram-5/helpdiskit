@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 
-const LiquidBackground = () => {
+interface LiquidBackgroundProps {
+  variant?: "dark" | "light";
+}
+
+const LiquidBackground = ({ variant = "dark" }: LiquidBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -12,7 +16,7 @@ const LiquidBackground = () => {
     let animationId: number;
     let time = 0;
 
-    const orbs = [
+    const darkOrbs = [
       { x: 0.2, y: 0.3, r: 300, color: [320, 70, 45], vx: 0.0003, vy: 0.0002 },
       { x: 0.8, y: 0.2, r: 350, color: [270, 65, 40], vx: -0.0002, vy: 0.0003 },
       { x: 0.5, y: 0.7, r: 280, color: [180, 60, 40], vx: 0.0004, vy: -0.0002 },
@@ -21,6 +25,20 @@ const LiquidBackground = () => {
       { x: 0.1, y: 0.6, r: 240, color: [200, 70, 50], vx: 0.0005, vy: 0.0001 },
     ];
 
+    const lightOrbs = [
+      { x: 0.15, y: 0.2, r: 350, color: [200, 85, 75], vx: 0.0002, vy: 0.0003 },
+      { x: 0.8, y: 0.15, r: 300, color: [195, 90, 80], vx: -0.0003, vy: 0.0002 },
+      { x: 0.5, y: 0.6, r: 320, color: [210, 80, 85], vx: 0.0004, vy: -0.0001 },
+      { x: 0.3, y: 0.85, r: 280, color: [190, 75, 70], vx: -0.0002, vy: -0.0002 },
+      { x: 0.75, y: 0.5, r: 340, color: [185, 95, 78], vx: 0.0003, vy: 0.0004 },
+      { x: 0.1, y: 0.5, r: 260, color: [205, 70, 88], vx: 0.0005, vy: 0.0001 },
+    ];
+
+    const orbs = variant === "light" ? lightOrbs : darkOrbs;
+    const bgColor = variant === "light" ? "hsl(0, 0%, 97%)" : "hsl(230, 25%, 4%)";
+    const orbOpacity = variant === "light" ? 0.45 : 0.35;
+    const orbMidOpacity = variant === "light" ? 0.18 : 0.12;
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -28,7 +46,7 @@ const LiquidBackground = () => {
 
     const draw = () => {
       time++;
-      ctx.fillStyle = "hsl(230, 25%, 4%)";
+      ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       for (const orb of orbs) {
@@ -44,8 +62,8 @@ const LiquidBackground = () => {
         const r = orb.r * scale;
 
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        grad.addColorStop(0, `hsla(${orb.color[0]}, ${orb.color[1]}%, ${orb.color[2]}%, 0.35)`);
-        grad.addColorStop(0.5, `hsla(${orb.color[0]}, ${orb.color[1]}%, ${orb.color[2]}%, 0.12)`);
+        grad.addColorStop(0, `hsla(${orb.color[0]}, ${orb.color[1]}%, ${orb.color[2]}%, ${orbOpacity})`);
+        grad.addColorStop(0.5, `hsla(${orb.color[0]}, ${orb.color[1]}%, ${orb.color[2]}%, ${orbMidOpacity})`);
         grad.addColorStop(1, `hsla(${orb.color[0]}, ${orb.color[1]}%, ${orb.color[2]}%, 0)`);
 
         ctx.fillStyle = grad;
@@ -65,7 +83,7 @@ const LiquidBackground = () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [variant]);
 
   return (
     <>
@@ -74,8 +92,9 @@ const LiquidBackground = () => {
         className="fixed inset-0 z-0"
         style={{ width: "100vw", height: "100vh" }}
       />
-      {/* Dark overlay for readability */}
-      <div className="fixed inset-0 z-0 bg-background/60" />
+      {variant === "dark" && (
+        <div className="fixed inset-0 z-0 bg-background/60" />
+      )}
     </>
   );
 };
