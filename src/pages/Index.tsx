@@ -9,8 +9,9 @@ import UserManagement from "@/components/UserManagement";
 import LiquidBackground from "@/components/LiquidBackground";
 import AppSidebar from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
-import { LogOut, Download } from "lucide-react";
+import { LogOut, Download, Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +29,9 @@ const Index = () => {
   const [editTicket, setEditTicket] = useState<Ticket | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Ticket | null>(null);
   const [activeView, setActiveView] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const isAdmin = role === "admin";
 
   const loadTickets = useCallback(async () => {
