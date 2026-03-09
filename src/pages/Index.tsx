@@ -9,8 +9,9 @@ import UserManagement from "@/components/UserManagement";
 import LiquidBackground from "@/components/LiquidBackground";
 import AppSidebar from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
-import { LogOut, Download } from "lucide-react";
+import { LogOut, Download, Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +29,9 @@ const Index = () => {
   const [editTicket, setEditTicket] = useState<Ticket | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Ticket | null>(null);
   const [activeView, setActiveView] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const isAdmin = role === "admin";
 
   const loadTickets = useCallback(async () => {
@@ -130,30 +133,45 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative overflow-x-hidden">
       <LiquidBackground variant="light" />
-      <AppSidebar activeView={activeView} onViewChange={setActiveView} />
+      <AppSidebar
+        activeView={activeView}
+        onViewChange={setActiveView}
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
+      />
 
-      <div className="ml-[180px] relative z-[1]">
+      <div className={`${isMobile ? 'ml-0' : 'ml-[180px]'} relative z-[1]`}>
         <header className="liquid-glass-strong sticky top-0 z-10">
-          <div className="px-6 py-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground">{getGreeting()}</p>
-              <h1 className="text-xl font-bold">{profile?.full_name || "User"} 👋</h1>
-              <p className="text-[11px] text-muted-foreground">Vindhya IT Support Hub — Efficient & AI-Driven</p>
+          <div className="px-4 md:px-6 py-3 md:py-4 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-3">
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="p-2 rounded-xl liquid-glass hover:bg-primary/10 transition-colors"
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
+              )}
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">{getGreeting()}</p>
+                <h1 className="text-lg md:text-xl font-bold truncate">{profile?.full_name || "User"} 👋</h1>
+                <p className="text-[10px] md:text-[11px] text-muted-foreground hidden sm:block">Vindhya IT Support Hub — Efficient & AI-Driven</p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary bg-secondary/30">
-                <Download className="mr-1.5 h-3.5 w-3.5" /> Export CSV
+                <Download className="mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Export CSV</span>
               </Button>
               <Button variant="ghost" size="sm" onClick={signOut} className="rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all text-xs">
-                <LogOut className="mr-1.5 h-3.5 w-3.5" /> Sign Out
+                <LogOut className="mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
           </div>
         </header>
 
-        <main className="p-6">
+        <main className="p-3 md:p-6 overflow-x-hidden">
           {renderContent()}
         </main>
 

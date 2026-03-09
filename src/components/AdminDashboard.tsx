@@ -86,7 +86,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="liquid-glass liquid-glass-hover rounded-2xl p-4 transition-all">
             <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
               <TrendingUp className="h-4 w-4 text-primary" />
               <h3 className="text-sm font-semibold">Ticket Analytics</h3>
             </div>
-            <div className="flex gap-3 text-[10px] text-muted-foreground">
+            <div className="flex flex-wrap gap-2 md:gap-3 text-[10px] text-muted-foreground">
               {analyticsData.map(a => (
                 <span key={a.name} className="flex items-center gap-1">
                   <span className="h-2 w-2 rounded-full" style={{ background: a.color }} />
@@ -213,7 +213,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
             <h3 className="text-sm font-semibold">Priority Distribution</h3>
           </div>
           <p className="text-[10px] text-muted-foreground mb-4">Live ticket priority spread</p>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {[
               { label: "Low", value: low, color: "bg-status-closed" },
               { label: "Medium", value: medium, color: "bg-priority-medium" },
