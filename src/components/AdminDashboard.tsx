@@ -213,7 +213,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
             <h3 className="text-sm font-semibold">Priority Distribution</h3>
           </div>
           <p className="text-[10px] text-muted-foreground mb-4">Live ticket priority spread</p>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {[
               { label: "Low", value: low, color: "bg-status-closed" },
               { label: "Medium", value: medium, color: "bg-priority-medium" },
