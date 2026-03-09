@@ -86,7 +86,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="liquid-glass liquid-glass-hover rounded-2xl p-4 transition-all">
             <div className="flex items-center gap-3">
