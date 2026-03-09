@@ -151,13 +151,20 @@ export const exportToCSV = (tickets: Ticket[], filename: string) => {
     "Issue Category", "Sub-category", "Effort Time", "Request Status", "Remarks"
   ];
 
+  // Sanitize cell values to prevent CSV formula injection
+  const sanitize = (v: any): string => {
+    const s = String(v ?? "");
+    // Prefix formula-starting characters with a single quote to neutralize them
+    return /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
+  };
+
   const rows = tickets.map(t => [
     t.sl_no, t.request_id, t.created_date, t.start_time || "", t.end_time || "",
     t.user_name, t.process, t.reported_by, t.priority, t.technician_name,
     t.issue_category, t.sub_category, t.effort_time, t.request_status, t.remarks
   ]);
 
-  const csv = [headers.join(","), ...rows.map(r => r.map(v => `"${v}"`).join(","))].join("\n");
+  const csv = [headers.join(","), ...rows.map(r => r.map(v => `"${sanitize(v)}"`).join(","))].join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

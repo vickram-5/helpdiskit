@@ -11,9 +11,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { username } = await req.json();
-    if (!username) {
-      return new Response(JSON.stringify({ error: "Username required" }), {
+    const { username, password } = await req.json();
+    if (!username || !password) {
+      return new Response(JSON.stringify({ error: "Invalid username or password" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -24,6 +24,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Look up the user's email server-side — never return it to the client
     const { data, error } = await supabaseAdmin
       .from("profiles")
       .select("user_id")
@@ -31,28 +32,52 @@ Deno.serve(async (req) => {
       .single();
 
     if (error || !data) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
+      // Return identical error for unknown username to prevent enumeration
+      return new Response(JSON.stringify({ error: "Invalid username or password" }), {
+        status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Get user email from auth
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(data.user_id);
 
     if (authError || !authUser?.user?.email) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
+      return new Response(JSON.stringify({ error: "Invalid username or password" }), {
+        status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(JSON.stringify({ email: authUser.user.email }), {
+    // Perform sign-in server-side so the email never leaves the server
+    const supabaseAnon = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!
+    );
+
+    const { data: signInData, error: signInError } = await supabaseAnon.auth.signInWithPassword({
+      email: authUser.user.email,
+      password,
+    });
+
+    if (signInError || !signInData.session) {
+      return new Response(JSON.stringify({ error: "Invalid username or password" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Return the session tokens — the client can use these to set the session
+    return new Response(JSON.stringify({
+      session: {
+        access_token: signInData.session.access_token,
+        refresh_token: signInData.session.refresh_token,
+      },
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
+    return new Response(JSON.stringify({ error: "Invalid username or password" }), {
+      status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
