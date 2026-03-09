@@ -129,7 +129,7 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
               <TrendingUp className="h-4 w-4 text-primary" />
               <h3 className="text-sm font-semibold">Ticket Analytics</h3>
             </div>
-            <div className="flex gap-3 text-[10px] text-muted-foreground">
+            <div className="flex flex-wrap gap-2 md:gap-3 text-[10px] text-muted-foreground">
               {analyticsData.map(a => (
                 <span key={a.name} className="flex items-center gap-1">
                   <span className="h-2 w-2 rounded-full" style={{ background: a.color }} />
