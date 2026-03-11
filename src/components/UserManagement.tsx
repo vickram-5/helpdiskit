@@ -8,15 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { UserPlus, Trash2, Loader2, Pencil, Search, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ROLE_LABELS, ROLE_ICONS, type AppRole } from "@/lib/roles";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 interface UserProfile {
@@ -26,6 +21,8 @@ interface UserProfile {
   role: string;
   status: string;
 }
+
+const ALL_ROLES: AppRole[] = ["technician", "system_admin", "network_engineer", "it_team_lead", "it_manager", "manager", "it_head", "admin"];
 
 const UserManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -39,13 +36,11 @@ const UserManagement = () => {
   const [role, setRole] = useState("technician");
   const [deleteUser, setDeleteUser] = useState<UserProfile | null>(null);
 
-  // Edit user state
   const [editUser, setEditUser] = useState<UserProfile | null>(null);
   const [editRole, setEditRole] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [editLoading, setEditLoading] = useState(false);
 
-  // Reset password state
   const [resetUser, setResetUser] = useState<UserProfile | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
@@ -53,9 +48,7 @@ const UserManagement = () => {
   const { toast } = useToast();
 
   const fetchUsers = async () => {
-    const { data } = await supabase.functions.invoke("manage-users", {
-      body: { action: "list" },
-    });
+    const { data } = await supabase.functions.invoke("manage-users", { body: { action: "list" } });
     if (data?.profiles && data?.roles) {
       const merged = data.profiles.map((p: any) => ({
         ...p,
@@ -77,9 +70,8 @@ const UserManagement = () => {
     if (data?.error || error) {
       toast({ title: "Error", description: data?.error || error?.message, variant: "destructive" });
     } else {
-      toast({ title: "User created", description: `${username} added as ${role}.` });
-      setShowAdd(false);
-      setPassword(""); setUsername(""); setFullName(""); setRole("technician");
+      toast({ title: "User created", description: `${username} added as ${ROLE_LABELS[role as AppRole] || role}.` });
+      setShowAdd(false); setPassword(""); setUsername(""); setFullName(""); setRole("technician");
       fetchUsers();
     }
     setLoading(false);
@@ -87,23 +79,13 @@ const UserManagement = () => {
 
   const handleDelete = async () => {
     if (!deleteUser) return;
-    const { data } = await supabase.functions.invoke("manage-users", {
-      body: { action: "delete", user_id: deleteUser.user_id },
-    });
-    if (data?.error) {
-      toast({ title: "Error", description: data.error, variant: "destructive" });
-    } else {
-      toast({ title: "Deleted", description: `${deleteUser.username} removed.` });
-      fetchUsers();
-    }
+    const { data } = await supabase.functions.invoke("manage-users", { body: { action: "delete", user_id: deleteUser.user_id } });
+    if (data?.error) toast({ title: "Error", description: data.error, variant: "destructive" });
+    else { toast({ title: "Deleted", description: `${deleteUser.username} removed.` }); fetchUsers(); }
     setDeleteUser(null);
   };
 
-  const handleEdit = (u: UserProfile) => {
-    setEditUser(u);
-    setEditRole(u.role);
-    setEditStatus(u.status);
-  };
+  const handleEdit = (u: UserProfile) => { setEditUser(u); setEditRole(u.role); setEditStatus(u.status); };
 
   const handleSaveEdit = async () => {
     if (!editUser) return;
@@ -111,13 +93,8 @@ const UserManagement = () => {
     const { data } = await supabase.functions.invoke("manage-users", {
       body: { action: "update", user_id: editUser.user_id, role: editRole, status: editStatus },
     });
-    if (data?.error) {
-      toast({ title: "Error", description: data.error, variant: "destructive" });
-    } else {
-      toast({ title: "Updated", description: `${editUser.username} updated successfully.` });
-      setEditUser(null);
-      fetchUsers();
-    }
+    if (data?.error) toast({ title: "Error", description: data.error, variant: "destructive" });
+    else { toast({ title: "Updated", description: `${editUser.username} updated.` }); setEditUser(null); fetchUsers(); }
     setEditLoading(false);
   };
 
@@ -127,51 +104,38 @@ const UserManagement = () => {
     const { data } = await supabase.functions.invoke("manage-users", {
       body: { action: "reset_password", user_id: resetUser.user_id, password: newPassword },
     });
-    if (data?.error) {
-      toast({ title: "Error", description: data.error, variant: "destructive" });
-    } else {
-      toast({ title: "Password Reset", description: `Password for ${resetUser.username} has been changed.` });
-      setResetUser(null);
-      setNewPassword("");
-    }
+    if (data?.error) toast({ title: "Error", description: data.error, variant: "destructive" });
+    else { toast({ title: "Password Reset", description: `Password for ${resetUser.username} changed.` }); setResetUser(null); setNewPassword(""); }
     setResetLoading(false);
   };
 
   const filteredUsers = users.filter((u) =>
-    !searchQuery ||
-    u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+    !searchQuery || u.username.toLowerCase().includes(searchQuery.toLowerCase()) || u.full_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const fieldClass = "bg-secondary/40 rounded-xl";
 
-  const roleIcon = (r: string) => {
-    if (r === "admin") return "⚙";
-    if (r === "manager") return "👔";
-    return "🔧";
-  };
-
-  const roleLabel = (r: string) => {
-    if (r === "admin") return "Admin";
-    if (r === "manager") return "Manager";
-    return "Technician";
-  };
+  const RoleSelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className={fieldClass} aria-label="Select role"><SelectValue /></SelectTrigger>
+      <SelectContent className="liquid-glass-strong rounded-xl">
+        {ALL_ROLES.map((r) => (
+          <SelectItem key={r} value={r}>{ROLE_ICONS[r]} {ROLE_LABELS[r]}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h2 className="text-lg font-semibold">User Management</h2>
         <div className="flex items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input
-              placeholder="Search users..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`pl-9 w-48 h-8 text-xs ${fieldClass}`}
-            />
+            <Input placeholder="Search users..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`pl-9 w-48 h-8 text-xs ${fieldClass}`} aria-label="Search users" />
           </div>
-          <Button size="sm" onClick={() => setShowAdd(true)} className="rounded-xl text-xs h-8">
+          <Button size="sm" onClick={() => setShowAdd(true)} className="rounded-xl text-xs h-8" aria-label="Add new user">
             <UserPlus className="mr-1.5 h-3.5 w-3.5" /> Add User
           </Button>
         </div>
@@ -195,30 +159,24 @@ const UserManagement = () => {
                 <TableCell className="text-sm">{u.full_name}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5 text-sm">
-                    <span className={`text-xs ${u.role === "admin" ? "text-primary" : u.role === "manager" ? "text-accent" : "text-muted-foreground"}`}>
-                      {roleIcon(u.role)}
-                    </span>
-                    <span className="capitalize">{roleLabel(u.role)}</span>
+                    <span className="text-xs">{ROLE_ICONS[u.role as AppRole] || "🔧"}</span>
+                    <span>{ROLE_LABELS[u.role as AppRole] || u.role}</span>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge className={`rounded-md text-[10px] ${
-                    u.status === "active"
-                      ? "bg-status-closed/12 text-status-closed border-status-closed/20"
-                      : "bg-destructive/12 text-destructive border-destructive/20"
-                  }`}>
+                  <Badge className={`rounded-md text-[10px] ${u.status === "active" ? "bg-status-closed/12 text-status-closed border-status-closed/20" : "bg-destructive/12 text-destructive border-destructive/20"}`}>
                     {u.status === "active" ? "Active" : "Inactive"}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex gap-1 justify-end">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-primary/10 hover:text-primary" onClick={() => handleEdit(u)} title="Edit User">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-primary/10 hover:text-primary" onClick={() => handleEdit(u)} aria-label={`Edit ${u.username}`}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-accent/10 hover:text-accent" onClick={() => { setResetUser(u); setNewPassword(""); }} title="Reset Password">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg hover:bg-accent/10 hover:text-accent" onClick={() => { setResetUser(u); setNewPassword(""); }} aria-label={`Reset password for ${u.username}`}>
                       <KeyRound className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteUser(u)} title="Delete User">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteUser(u)} aria-label={`Delete ${u.username}`}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
@@ -235,34 +193,26 @@ const UserManagement = () => {
           <DialogHeader><DialogTitle>Add New User</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Username *</label>
-              <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="johndoe" className={fieldClass} />
+              <label htmlFor="new-username" className="text-xs font-medium text-muted-foreground">Username *</label>
+              <Input id="new-username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="johndoe" className={fieldClass} aria-label="Username" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Full Name *</label>
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className={fieldClass} />
+              <label htmlFor="new-fullname" className="text-xs font-medium text-muted-foreground">Full Name *</label>
+              <Input id="new-fullname" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className={fieldClass} aria-label="Full name" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Password *</label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={fieldClass} />
+              <label htmlFor="new-password" className="text-xs font-medium text-muted-foreground">Password *</label>
+              <Input id="new-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={fieldClass} aria-label="Password" />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Role</label>
-              <Select value={role} onValueChange={setRole}>
-                <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
-                <SelectContent className="liquid-glass-strong rounded-xl">
-                  <SelectItem value="technician">🔧 Technician</SelectItem>
-                  <SelectItem value="manager">👔 Manager</SelectItem>
-                  <SelectItem value="admin">⚙ Admin</SelectItem>
-                </SelectContent>
-              </Select>
+              <RoleSelect value={role} onChange={setRole} />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)} className="rounded-xl">Cancel</Button>
             <Button onClick={handleCreate} disabled={loading || !password || !username || !fullName} className="rounded-xl">
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Create User
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Create User
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -275,19 +225,12 @@ const UserManagement = () => {
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Role</label>
-              <Select value={editRole} onValueChange={setEditRole}>
-                <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
-                <SelectContent className="liquid-glass-strong rounded-xl">
-                  <SelectItem value="technician">🔧 Technician</SelectItem>
-                  <SelectItem value="manager">👔 Manager</SelectItem>
-                  <SelectItem value="admin">⚙ Admin</SelectItem>
-                </SelectContent>
-              </Select>
+              <RoleSelect value={editRole} onChange={setEditRole} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Status</label>
               <Select value={editStatus} onValueChange={setEditStatus}>
-                <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
+                <SelectTrigger className={fieldClass} aria-label="User status"><SelectValue /></SelectTrigger>
                 <SelectContent className="liquid-glass-strong rounded-xl">
                   <SelectItem value="active">✅ Active</SelectItem>
                   <SelectItem value="inactive">🚫 Inactive</SelectItem>
@@ -298,8 +241,7 @@ const UserManagement = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditUser(null)} className="rounded-xl">Cancel</Button>
             <Button onClick={handleSaveEdit} disabled={editLoading} className="rounded-xl">
-              {editLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Save Changes
+              {editLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -311,15 +253,14 @@ const UserManagement = () => {
           <DialogHeader><DialogTitle>Reset Password — {resetUser?.username}</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">New Password *</label>
-              <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password (min 6 chars)" className={fieldClass} />
+              <label htmlFor="reset-pw" className="text-xs font-medium text-muted-foreground">New Password *</label>
+              <Input id="reset-pw" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password (min 6 chars)" className={fieldClass} aria-label="New password" />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setResetUser(null)} className="rounded-xl">Cancel</Button>
             <Button onClick={handleResetPassword} disabled={resetLoading || newPassword.length < 6} className="rounded-xl">
-              {resetLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Reset Password
+              {resetLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Reset Password
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -336,9 +277,7 @@ const UserManagement = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
-              Delete
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
