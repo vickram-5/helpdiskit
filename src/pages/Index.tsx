@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchTickets, deleteTicket, exportToCSV, type Ticket } from "@/lib/tickets";
 import { useAuth } from "@/hooks/useAuth";
+import { canViewAllTickets, canRaiseTicket, canManageUsers } from "@/lib/roles";
 import TicketForm from "@/components/TicketForm";
 import TicketTable from "@/components/TicketTable";
 import AdminDashboard from "@/components/AdminDashboard";
 import EditTicketDialog from "@/components/EditTicketDialog";
 import UserManagement from "@/components/UserManagement";
+import AssetManagement from "@/components/AssetManagement";
 import LiquidBackground from "@/components/LiquidBackground";
 import AppSidebar from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
@@ -13,14 +15,8 @@ import { LogOut, Download, Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 const Index = () => {
@@ -32,20 +28,18 @@ const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const isAdmin = role === "admin";
+  const viewAll = canViewAllTickets(role);
 
   const loadTickets = useCallback(async () => {
-    const data = await fetchTickets(user?.id, isAdmin);
+    const data = await fetchTickets(user?.id, viewAll);
     setTickets(data);
-  }, [user?.id, isAdmin]);
+  }, [user?.id, viewAll]);
 
   useEffect(() => {
     if (user) loadTickets();
   }, [user, loadTickets]);
 
-  const handleTicketCreated = (ticket: Ticket) => {
-    setTickets((prev) => [ticket, ...prev]);
-  };
+  const handleTicketCreated = (ticket: Ticket) => setTickets((prev) => [ticket, ...prev]);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -59,9 +53,7 @@ const Index = () => {
     setDeleteTarget(null);
   };
 
-  const handleExport = () => {
-    exportToCSV(tickets, `IT_Tickets_${new Date().toISOString().split("T")[0]}`);
-  };
+  const handleExport = () => exportToCSV(tickets, `IT_Tickets_${new Date().toISOString().split("T")[0]}`);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -75,7 +67,7 @@ const Index = () => {
       case "dashboard":
         return <AdminDashboard tickets={tickets} />;
       case "raise":
-        return (
+        return canRaiseTicket(role) ? (
           <div className="max-w-3xl">
             <div className="liquid-glass rounded-2xl p-6 glow-primary">
               <h2 className="text-lg font-semibold mb-1 gradient-text">Raise New Ticket</h2>
@@ -83,7 +75,7 @@ const Index = () => {
               <TicketForm onTicketCreated={handleTicketCreated} />
             </div>
           </div>
-        );
+        ) : null;
       case "tickets":
         return (
           <div className="liquid-glass rounded-2xl p-6">
@@ -93,11 +85,17 @@ const Index = () => {
           </div>
         );
       case "users":
-        return isAdmin ? (
+        return canManageUsers(role) ? (
           <div className="liquid-glass rounded-2xl p-6">
             <UserManagement />
           </div>
         ) : null;
+      case "assets":
+        return (
+          <div className="liquid-glass rounded-2xl p-6">
+            <AssetManagement />
+          </div>
+        );
       case "history":
         return (
           <div className="liquid-glass rounded-2xl p-6">
@@ -135,22 +133,14 @@ const Index = () => {
   return (
     <div className="min-h-screen relative overflow-x-hidden">
       <LiquidBackground variant="light" />
-      <AppSidebar
-        activeView={activeView}
-        onViewChange={setActiveView}
-        mobileOpen={sidebarOpen}
-        onMobileClose={() => setSidebarOpen(false)}
-      />
+      <AppSidebar activeView={activeView} onViewChange={setActiveView} mobileOpen={sidebarOpen} onMobileClose={() => setSidebarOpen(false)} />
 
       <div className={`${isMobile ? 'ml-0' : 'ml-[180px]'} relative z-[1]`}>
         <header className="liquid-glass-strong sticky top-0 z-10">
           <div className="px-4 md:px-6 py-3 md:py-4 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               {isMobile && (
-                <button
-                  onClick={() => setSidebarOpen(true)}
-                  className="p-2 rounded-xl liquid-glass hover:bg-primary/10 transition-colors"
-                >
+                <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-xl liquid-glass hover:bg-primary/10 transition-colors" aria-label="Open navigation menu">
                   <Menu className="h-5 w-5" />
                 </button>
               )}
@@ -161,31 +151,24 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary bg-secondary/30">
+              <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary bg-secondary/30" aria-label="Export tickets to CSV">
                 <Download className="mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Export CSV</span>
               </Button>
-              <Button variant="ghost" size="sm" onClick={signOut} className="rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all text-xs">
+              <Button variant="ghost" size="sm" onClick={signOut} className="rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all text-xs" aria-label="Sign out">
                 <LogOut className="mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
           </div>
         </header>
 
-        <main className="p-3 md:p-6 overflow-x-hidden">
-          {renderContent()}
-        </main>
+        <main className="p-3 md:p-6 overflow-x-hidden">{renderContent()}</main>
 
         <footer className="py-4 text-center text-[10px] text-muted-foreground">
           © 2026 CyberVibe Global Solutions Pvt Ltd. All rights reserved.
         </footer>
       </div>
 
-      <EditTicketDialog
-        ticket={editTicket}
-        open={!!editTicket}
-        onClose={() => setEditTicket(null)}
-        onUpdated={loadTickets}
-      />
+      <EditTicketDialog ticket={editTicket} open={!!editTicket} onClose={() => setEditTicket(null)} onUpdated={loadTickets} />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent className="liquid-glass-strong rounded-2xl">
@@ -197,9 +180,7 @@ const Index = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
-              Delete
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

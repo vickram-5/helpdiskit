@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { PRIORITIES } from "@/lib/constants";
 
 interface EditTicketDialogProps {
   ticket: Ticket | null;
@@ -27,7 +28,7 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
     setSaving(true);
     const success = await updateTicket(ticket.id, {
       request_status: status,
-      priority: priority as "Low" | "Medium" | "High",
+      priority: priority as Ticket["priority"],
       technician_name: technicianName,
       end_time: endTime || null,
     } as any);
@@ -54,33 +55,34 @@ const EditTicketDialog = ({ ticket, open, onClose, onUpdated }: EditTicketDialog
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Status</label>
+            <label htmlFor="edit-status" className="text-xs font-medium text-muted-foreground">Status</label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
+              <SelectTrigger id="edit-status" className={fieldClass} aria-label="Ticket status"><SelectValue /></SelectTrigger>
               <SelectContent className="liquid-glass-strong rounded-xl">
                 <SelectItem value="Open">Open</SelectItem>
+                <SelectItem value="In Progress">In Progress</SelectItem>
                 <SelectItem value="Closed">Closed</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Priority</label>
+            <label htmlFor="edit-priority" className="text-xs font-medium text-muted-foreground">Priority</label>
             <Select value={priority} onValueChange={setPriority}>
-              <SelectTrigger className={fieldClass}><SelectValue /></SelectTrigger>
+              <SelectTrigger id="edit-priority" className={fieldClass} aria-label="Ticket priority"><SelectValue /></SelectTrigger>
               <SelectContent className="liquid-glass-strong rounded-xl">
-                <SelectItem value="Low">🟢 Low</SelectItem>
-                <SelectItem value="Medium">🟡 Medium</SelectItem>
-                <SelectItem value="High">🔴 High</SelectItem>
+                {PRIORITIES.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Technician Name</label>
-            <Input value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} className={fieldClass} />
+            <label htmlFor="edit-tech" className="text-xs font-medium text-muted-foreground">Technician Name</label>
+            <Input id="edit-tech" value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} className={fieldClass} aria-label="Technician name" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">End Time</label>
-            <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={fieldClass} />
+            <label htmlFor="edit-end" className="text-xs font-medium text-muted-foreground">End Time</label>
+            <Input id="edit-end" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={fieldClass} aria-label="End time" />
           </div>
         </div>
         <DialogFooter>

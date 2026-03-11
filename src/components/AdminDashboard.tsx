@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   LineChart, Line, Legend,
 } from "recharts";
-import { TicketIcon, Clock, CheckCircle2, AlertTriangle, TrendingUp, Users, Zap, Activity } from "lucide-react";
+import { TicketIcon, Clock, CheckCircle2, AlertTriangle, TrendingUp, Users, Zap, Activity, Trophy } from "lucide-react";
 
 interface AdminDashboardProps {
   tickets: Ticket[];
@@ -39,11 +39,12 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
   ].filter(d => d.value > 0);
   if (donutData.length === 0) donutData.push({ name: "Active", value: 0, color: "hsl(200, 30%, 80%)" });
 
-  const analyticsData = [
-    { name: "Low", value: low, color: "hsl(150, 65%, 42%)" },
-    { name: "Medium", value: medium, color: "hsl(40, 90%, 50%)" },
-    { name: "High", value: high, color: "hsl(0, 75%, 50%)" },
-    { name: "Critical", value: critical, color: "hsl(320, 75%, 50%)" },
+  // Open tickets by priority chart data
+  const openByPriority = [
+    { name: "Low", value: monthTickets.filter(t => t.request_status === "Open" && t.priority === "Low").length, color: "hsl(150, 65%, 42%)" },
+    { name: "Medium", value: monthTickets.filter(t => t.request_status === "Open" && t.priority === "Medium").length, color: "hsl(40, 90%, 50%)" },
+    { name: "High", value: monthTickets.filter(t => t.request_status === "Open" && t.priority === "High").length, color: "hsl(0, 75%, 50%)" },
+    { name: "Critical", value: monthTickets.filter(t => t.request_status === "Open" && (t.priority as string) === "Critical").length, color: "hsl(320, 75%, 50%)" },
   ];
 
   const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -55,12 +56,22 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
     }).length,
   }));
 
+  // Technician performance leaderboard (resolved this month)
+  const techResolvedMap = new Map<string, number>();
+  monthTickets.forEach((t) => {
+    if ((t.request_status === "Closed" || t.request_status === "Resolved") && t.technician_name) {
+      techResolvedMap.set(t.technician_name, (techResolvedMap.get(t.technician_name) || 0) + 1);
+    }
+  });
+  const leaderboard = Array.from(techResolvedMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+  const maxResolved = leaderboard.length > 0 ? leaderboard[0].count : 1;
+
   const techMap = new Map<string, number>();
   monthTickets.forEach((t) => {
     if (t.technician_name) techMap.set(t.technician_name, (techMap.get(t.technician_name) || 0) + 1);
   });
-  const technicians = Array.from(techMap.entries()).map(([name, count]) => ({ name, count }));
-  const totalResolved = resolved;
 
   const recentTickets = [...tickets].sort((a, b) =>
     new Date(b.created_at || b.created_date).getTime() - new Date(a.created_at || a.created_date).getTime()
@@ -86,9 +97,10 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Stats Cards - 2x2 on mobile, 4-col on desktop */}
       <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className="liquid-glass liquid-glass-hover rounded-2xl p-4 transition-all">
+          <div key={s.label} className="liquid-glass liquid-glass-hover rounded-2xl p-4 transition-all" role="status" aria-label={`${s.label}: ${s.value}`}>
             <div className="flex items-center gap-3">
               <div className={`h-10 w-10 rounded-xl ${s.iconBg} flex items-center justify-center`}>
                 <s.icon className={`h-5 w-5 ${s.color}`} />
@@ -102,11 +114,12 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
         ))}
       </div>
 
+      {/* Row 2: Donut + Open by Priority */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="liquid-glass rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <span className="h-2 w-2 rounded-full bg-status-closed animate-pulse" />
-            <h3 className="text-sm font-semibold">Active Critical Tickets</h3>
+            <h3 className="text-sm font-semibold">Ticket Status</h3>
           </div>
           <ResponsiveContainer width="100%" height={180}>
             <PieChart>
@@ -124,55 +137,49 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
         </div>
 
         <div className="lg:col-span-2 liquid-glass rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-semibold">Ticket Analytics</h3>
-            </div>
-            <div className="flex flex-wrap gap-2 md:gap-3 text-[10px] text-muted-foreground">
-              {analyticsData.map(a => (
-                <span key={a.name} className="flex items-center gap-1">
-                  <span className="h-2 w-2 rounded-full" style={{ background: a.color }} />
-                  {a.name}
-                </span>
-              ))}
-            </div>
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangle className="h-4 w-4 text-priority-high" />
+            <h3 className="text-sm font-semibold">Open Tickets by Priority</h3>
           </div>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={analyticsData}>
+            <BarChart data={openByPriority} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="hsla(200, 30%, 75%, 0.3)" />
-              <XAxis dataKey="name" tick={axisTickStyle} />
-              <YAxis tick={axisTickStyle} allowDecimals={false} />
+              <XAxis type="number" tick={axisTickStyle} allowDecimals={false} />
+              <YAxis dataKey="name" type="category" tick={axisTickStyle} width={60} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                {analyticsData.map((e, i) => <Cell key={i} fill={e.color} />)}
+              <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                {openByPriority.map((e, i) => <Cell key={i} fill={e.color} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
+      {/* Row 3: Leaderboard + Weekly Trend + Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Technician Performance Leaderboard */}
         <div className="liquid-glass rounded-2xl p-5">
-          <h3 className="text-sm font-semibold mb-4">Your Support Team</h3>
-          <div className="flex gap-1 mb-4">
-            {technicians.length > 0 ? technicians.slice(0, 5).map((t, i) => (
-              <div key={i} className="h-8 w-8 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold border border-primary/20">
-                {t.name.charAt(0).toUpperCase()}
+          <div className="flex items-center gap-2 mb-4">
+            <Trophy className="h-4 w-4 text-priority-medium" />
+            <h3 className="text-sm font-semibold">Leaderboard (This Month)</h3>
+          </div>
+          <div className="space-y-3">
+            {leaderboard.length > 0 ? leaderboard.slice(0, 8).map((t, i) => (
+              <div key={t.name} className="flex items-center gap-3">
+                <span className={`text-xs font-bold w-5 text-center ${i === 0 ? "text-priority-medium" : i === 1 ? "text-muted-foreground" : "text-muted-foreground/60"}`}>
+                  {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate">{t.name}</p>
+                  <div className="mt-1 h-1.5 rounded-full bg-secondary/60 overflow-hidden">
+                    <div className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all" style={{ width: `${(t.count / maxResolved) * 100}%` }} />
+                  </div>
+                </div>
+                <span className="text-xs font-mono font-semibold text-primary">{t.count}</span>
               </div>
             )) : (
-              <div className="h-8 w-8 rounded-full bg-primary/15 text-primary flex items-center justify-center text-[10px] font-bold border border-primary/20">A</div>
+              <p className="text-xs text-muted-foreground">No resolved tickets yet</p>
             )}
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Agent Performance</span>
-              <span className="font-mono font-semibold">{total > 0 ? Math.round((totalResolved / total) * 100) : 0}%</span>
-            </div>
-            <div className="h-1.5 rounded-full bg-secondary/80 overflow-hidden">
-              <div className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all" style={{ width: `${total > 0 ? (totalResolved / total) * 100 : 0}%` }} />
-            </div>
-            <p className="text-[10px] text-muted-foreground">{technicians.length || 1} active agents · {totalResolved} resolved</p>
           </div>
         </div>
 
@@ -193,52 +200,6 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
         </div>
 
         <div className="liquid-glass rounded-2xl p-5">
-          <h3 className="text-sm font-semibold mb-4">Status Distribution</h3>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart>
-              <Pie data={donutData} cx="50%" cy="50%" outerRadius={60} dataKey="value" strokeWidth={0}>
-                {donutData.map((e, i) => <Cell key={i} fill={e.color} />)}
-              </Pie>
-              <Tooltip contentStyle={tooltipStyle} />
-              <Legend wrapperStyle={{ fontSize: "10px" }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 liquid-glass rounded-2xl p-5">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="h-2 w-2 rounded-full bg-priority-medium" />
-            <h3 className="text-sm font-semibold">Priority Distribution</h3>
-          </div>
-          <p className="text-[10px] text-muted-foreground mb-4">Live ticket priority spread</p>
-          <div className="flex flex-wrap items-center gap-2">
-            {[
-              { label: "Low", value: low, color: "bg-status-closed" },
-              { label: "Medium", value: medium, color: "bg-priority-medium" },
-              { label: "High", value: high, color: "bg-priority-high" },
-              { label: "Critical", value: critical, color: "bg-accent" },
-            ].map((p) => (
-              <div key={p.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                <span className={`h-2 w-2 rounded-full ${p.color}`} />
-                {p.label}: {p.value}
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 h-3 rounded-full bg-secondary/60 overflow-hidden flex">
-            {total > 0 && [
-              { v: low, c: "bg-status-closed" },
-              { v: medium, c: "bg-priority-medium" },
-              { v: high, c: "bg-priority-high" },
-              { v: critical, c: "bg-accent" },
-            ].map((s, i) => s.v > 0 && (
-              <div key={i} className={`${s.c} h-full transition-all`} style={{ width: `${(s.v / total) * 100}%` }} />
-            ))}
-          </div>
-        </div>
-
-        <div className="liquid-glass rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="h-4 w-4 text-accent" />
             <h3 className="text-sm font-semibold">Recent Activity</h3>
@@ -256,6 +217,38 @@ const AdminDashboard = ({ tickets }: AdminDashboardProps) => {
               <p className="text-xs text-muted-foreground">No recent activity</p>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Row 4: Priority Distribution */}
+      <div className="liquid-glass rounded-2xl p-5">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="h-2 w-2 rounded-full bg-priority-medium" />
+          <h3 className="text-sm font-semibold">Priority Distribution</h3>
+        </div>
+        <p className="text-[10px] text-muted-foreground mb-4">Live ticket priority spread</p>
+        <div className="flex flex-wrap items-center gap-2">
+          {[
+            { label: "Low", value: low, color: "bg-status-closed" },
+            { label: "Medium", value: medium, color: "bg-priority-medium" },
+            { label: "High", value: high, color: "bg-priority-high" },
+            { label: "Critical", value: critical, color: "bg-accent" },
+          ].map((p) => (
+            <div key={p.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+              <span className={`h-2 w-2 rounded-full ${p.color}`} />
+              {p.label}: {p.value}
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 h-3 rounded-full bg-secondary/60 overflow-hidden flex">
+          {total > 0 && [
+            { v: low, c: "bg-status-closed" },
+            { v: medium, c: "bg-priority-medium" },
+            { v: high, c: "bg-priority-high" },
+            { v: critical, c: "bg-accent" },
+          ].map((s, i) => s.v > 0 && (
+            <div key={i} className={`${s.c} h-full transition-all`} style={{ width: `${(s.v / total) * 100}%` }} />
+          ))}
         </div>
       </div>
     </div>

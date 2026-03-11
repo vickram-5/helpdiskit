@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import type { AppRole } from "@/lib/roles";
 
 interface AuthContextType {
   user: User | null;
   profile: { username: string; full_name: string } | null;
-  role: "admin" | "technician" | "manager" | null;
+  role: AppRole | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signInWithUsername: (username: string, password: string) => Promise<{ error: string | null }>;
@@ -17,7 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<{ username: string; full_name: string } | null>(null);
-  const [role, setRole] = useState<"admin" | "technician" | "manager" | null>(null);
+  const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfileAndRole = async (userId: string) => {
@@ -26,14 +27,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       supabase.from("user_roles").select("role").eq("user_id", userId).single(),
     ]);
     if (profileRes.data) setProfile(profileRes.data as any);
-    if (roleRes.data) setRole((roleRes.data as any).role);
+    if (roleRes.data) setRole((roleRes.data as any).role as AppRole);
   };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         setUser(session.user);
-        // Use setTimeout to avoid potential deadlock with Supabase client
         setTimeout(() => fetchProfileAndRole(session.user.id), 0);
       } else {
         setUser(null);
@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (fnError || !data?.session) {
         return { error: "Invalid username or password" };
       }
-      // Set the session returned from the server-side login
       const { error } = await supabase.auth.setSession({
         access_token: data.session.access_token,
         refresh_token: data.session.refresh_token,
