@@ -7,19 +7,21 @@ export interface Asset {
   serial_number: string;
   assigned_user: string;
   status: string;
+  notes: string;
   created_at?: string;
   updated_at?: string;
 }
 
 export const ASSET_TYPES = [
-  "Desktop/Thin Client",
-  "Headset",
-  "Braille Keyboard",
-  "Specialized Ergonomics",
+  "Desktop / Thin Client",
+  "Headset (USB/Wireless)",
+  "Monitor",
   "IP Phone",
+  "Braille Display / Keyboard",
+  "Specialized Ergonomics",
 ];
 
-export const ASSET_STATUSES = ["Available", "Assigned", "Under Repair", "Decommissioned"];
+export const ASSET_STATUSES = ["Active", "In Repair", "Spare"];
 
 export const fetchAssets = async (): Promise<Asset[]> => {
   const { data, error } = await supabase
