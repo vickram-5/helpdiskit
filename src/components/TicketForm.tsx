@@ -135,17 +135,6 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         <Field label="Location" htmlFor="location">
           <Input id="location" placeholder="e.g. Floor 2, Bay 5" value={location} onChange={(e) => setLocation(e.target.value)} maxLength={100} className={fieldClass} aria-label="Location" />
         </Field>
-        <Field label="Asset" htmlFor="asset">
-          <Select value={selectedAssetId} onValueChange={setSelectedAssetId}>
-            <SelectTrigger id="asset" className={fieldClass} aria-label="Select asset"><SelectValue placeholder="Link asset (optional)" /></SelectTrigger>
-            <SelectContent className="liquid-glass-strong rounded-xl">
-              <SelectItem value="none">None</SelectItem>
-              {assets.map((a) => (
-                <SelectItem key={a.id} value={a.id}>{a.asset_id} — {a.asset_type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
