@@ -21,6 +21,7 @@ export type Database = {
           assigned_user: string | null
           created_at: string | null
           id: string
+          notes: string | null
           serial_number: string | null
           status: string
           updated_at: string | null
@@ -31,6 +32,7 @@ export type Database = {
           assigned_user?: string | null
           created_at?: string | null
           id?: string
+          notes?: string | null
           serial_number?: string | null
           status?: string
           updated_at?: string | null
@@ -41,6 +43,7 @@ export type Database = {
           assigned_user?: string | null
           created_at?: string | null
           id?: string
+          notes?: string | null
           serial_number?: string | null
           status?: string
           updated_at?: string | null
