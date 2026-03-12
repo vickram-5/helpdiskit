@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createTicket, type Ticket } from "@/lib/tickets";
-import { fetchAssets, type Asset } from "@/lib/assets";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,15 +31,9 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
   const [createdDate, setCreatedDate] = useState<Date>(new Date());
   const [otherCategory, setOtherCategory] = useState("");
   const [otherSubCategory, setOtherSubCategory] = useState("");
-  const [selectedAssetId, setSelectedAssetId] = useState("");
-  const [assets, setAssets] = useState<Asset[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    fetchAssets().then(setAssets);
-  }, []);
 
   const subCategories = issueCategory ? ISSUE_CATEGORIES[issueCategory] || [] : [];
 
@@ -75,7 +68,6 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
       created_date: format(createdDate, "yyyy-MM-dd"),
       department,
       location: location.trim(),
-      asset_id: selectedAssetId || null,
     });
 
     if (ticket) {
@@ -87,7 +79,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         setPriority(""); setIssueCategory(""); setSubCategory("");
         setStartTime(""); setEndTime(""); setRemarks("");
         setOtherCategory(""); setOtherSubCategory("");
-        setSelectedAssetId(""); setCreatedDate(new Date());
+        setCreatedDate(new Date());
         setSuccess(false);
       }, 1200);
     } else {
@@ -142,17 +134,6 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         </Field>
         <Field label="Location" htmlFor="location">
           <Input id="location" placeholder="e.g. Floor 2, Bay 5" value={location} onChange={(e) => setLocation(e.target.value)} maxLength={100} className={fieldClass} aria-label="Location" />
-        </Field>
-        <Field label="Asset" htmlFor="asset">
-          <Select value={selectedAssetId} onValueChange={setSelectedAssetId}>
-            <SelectTrigger id="asset" className={fieldClass} aria-label="Select asset"><SelectValue placeholder="Link asset (optional)" /></SelectTrigger>
-            <SelectContent className="liquid-glass-strong rounded-xl">
-              <SelectItem value="none">None</SelectItem>
-              {assets.map((a) => (
-                <SelectItem key={a.id} value={a.id}>{a.asset_id} — {a.asset_type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </Field>
       </div>
 

@@ -21,7 +21,6 @@ export interface Ticket {
   created_at?: string;
   department?: string;
   location?: string;
-  asset_id?: string | null;
 }
 
 export const fetchTickets = async (userId?: string, canViewAll?: boolean): Promise<Ticket[]> => {
@@ -65,7 +64,6 @@ export const createTicket = async (
         created_date: ticket.created_date,
         department: ticket.department || "",
         location: ticket.location || "",
-        asset_id: ticket.asset_id || null,
       } as any)
       .select()
       .single();

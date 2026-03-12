@@ -79,7 +79,6 @@ export type Database = {
       }
       tickets: {
         Row: {
-          asset_id: string | null
           created_at: string
           created_by: string
           created_date: string
@@ -103,7 +102,6 @@ export type Database = {
           user_name: string
         }
         Insert: {
-          asset_id?: string | null
           created_at?: string
           created_by: string
           created_date?: string
@@ -127,7 +125,6 @@ export type Database = {
           user_name: string
         }
         Update: {
-          asset_id?: string | null
           created_at?: string
           created_by?: string
           created_date?: string
@@ -150,15 +147,7 @@ export type Database = {
           updated_at?: string
           user_name?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "tickets_asset_id_fkey"
-            columns: ["asset_id"]
-            isOneToOne: false
-            referencedRelation: "assets"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_roles: {
         Row: {
