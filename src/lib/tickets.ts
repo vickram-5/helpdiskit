@@ -21,7 +21,6 @@ export interface Ticket {
   created_at?: string;
   department?: string;
   location?: string;
-  asset_id?: string | null;
 }
 
 export const fetchTickets = async (userId?: string, canViewAll?: boolean): Promise<Ticket[]> => {
