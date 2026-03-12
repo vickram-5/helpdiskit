@@ -68,7 +68,6 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
       created_date: format(createdDate, "yyyy-MM-dd"),
       department,
       location: location.trim(),
-      asset_id: selectedAssetId || null,
     });
 
     if (ticket) {
@@ -80,7 +79,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
         setPriority(""); setIssueCategory(""); setSubCategory("");
         setStartTime(""); setEndTime(""); setRemarks("");
         setOtherCategory(""); setOtherSubCategory("");
-        setSelectedAssetId(""); setCreatedDate(new Date());
+        setCreatedDate(new Date());
         setSuccess(false);
       }, 1200);
     } else {
