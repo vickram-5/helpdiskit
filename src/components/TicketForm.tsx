@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createTicket, type Ticket } from "@/lib/tickets";
-import { fetchAssets, type Asset } from "@/lib/assets";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,15 +31,9 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
   const [createdDate, setCreatedDate] = useState<Date>(new Date());
   const [otherCategory, setOtherCategory] = useState("");
   const [otherSubCategory, setOtherSubCategory] = useState("");
-  const [selectedAssetId, setSelectedAssetId] = useState("");
-  const [assets, setAssets] = useState<Asset[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    fetchAssets().then(setAssets);
-  }, []);
 
   const subCategories = issueCategory ? ISSUE_CATEGORIES[issueCategory] || [] : [];
 
