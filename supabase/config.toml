@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.lookup-email]
 verify_jwt = false
+
+[functions.import-sheet]
+verify_jwt = false

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { fetchTickets, deleteTicket, exportToCSV, type Ticket } from "@/lib/tickets";
+import { fetchTickets, deleteTicket, exportToCSV, importFromSheet, type Ticket } from "@/lib/tickets";
 import { useAuth } from "@/hooks/useAuth";
 import TicketForm from "@/components/TicketForm";
 import TicketTable from "@/components/TicketTable";
