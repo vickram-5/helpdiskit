@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { fetchTickets, deleteTicket, exportToCSV, type Ticket } from "@/lib/tickets";
+import { fetchTickets, deleteTicket, exportToCSV, importFromSheet, type Ticket } from "@/lib/tickets";
 import { useAuth } from "@/hooks/useAuth";
 import TicketForm from "@/components/TicketForm";
 import TicketTable from "@/components/TicketTable";
@@ -9,7 +9,7 @@ import UserManagement from "@/components/UserManagement";
 import LiquidBackground from "@/components/LiquidBackground";
 import AppSidebar from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
-import { LogOut, Download, Menu } from "lucide-react";
+import { LogOut, Download, Menu, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -30,6 +30,7 @@ const Index = () => {
   const [deleteTarget, setDeleteTarget] = useState<Ticket | null>(null);
   const [activeView, setActiveView] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const isAdmin = role === "admin";
@@ -61,6 +62,18 @@ const Index = () => {
 
   const handleExport = () => {
     exportToCSV(tickets, `IT_Tickets_${new Date().toISOString().split("T")[0]}`);
+  };
+
+  const handleSyncFromSheet = async () => {
+    setSyncing(true);
+    const result = await importFromSheet();
+    if (result) {
+      toast({ title: "Sync Complete", description: `${result.updated} tickets updated from Google Sheet.` });
+      await loadTickets();
+    } else {
+      toast({ title: "Sync Failed", description: "Could not import from Google Sheet.", variant: "destructive" });
+    }
+    setSyncing(false);
   };
 
   const getGreeting = () => {
@@ -161,6 +174,9 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleSyncFromSheet} disabled={syncing} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary bg-secondary/30">
+                <RefreshCw className={`mr-1 h-3.5 w-3.5 ${syncing ? 'animate-spin' : ''}`} /> <span className="hidden sm:inline">{syncing ? 'Syncing...' : 'Sync Sheet'}</span>
+              </Button>
               <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary bg-secondary/30">
                 <Download className="mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Export CSV</span>
               </Button>
