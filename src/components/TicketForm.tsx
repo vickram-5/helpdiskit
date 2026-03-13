@@ -16,6 +16,12 @@ interface TicketFormProps {
   onTicketCreated: (ticket: Ticket) => void;
 }
 
+const PROCESS_OPTIONS = [
+  "Dish&D2H", "Muthoot", "HR", "Finance", "L&T", "Samasta", "Incred", "Fincare",
+  "Annapurna", "Flexiloan", "Farmsales", "ABG", "NARC", "MD", "CEO", "Utkarsh",
+  "Titan", "Ujjivan", "Yes Bank", "BFL", "Get Advantage", "Others",
+];
+
 const ISSUE_CATEGORIES: Record<string, string[]> = {
   Hardware: ["Laptop Issue", "Monitor", "Keyboard/Mouse", "Printer", "Other"],
   Software: ["OS Issue", "Application Error", "Installation", "Update", "Other"],
