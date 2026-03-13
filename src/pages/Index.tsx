@@ -174,6 +174,9 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleSyncFromSheet} disabled={syncing} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary bg-secondary/30">
+                <RefreshCw className={`mr-1 h-3.5 w-3.5 ${syncing ? 'animate-spin' : ''}`} /> <span className="hidden sm:inline">{syncing ? 'Syncing...' : 'Sync Sheet'}</span>
+              </Button>
               <Button variant="outline" size="sm" onClick={handleExport} className="rounded-xl transition-all text-xs border-border hover:bg-primary/10 hover:text-primary bg-secondary/30">
                 <Download className="mr-1 h-3.5 w-3.5" /> <span className="hidden sm:inline">Export CSV</span>
               </Button>
