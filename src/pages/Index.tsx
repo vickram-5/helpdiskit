@@ -30,6 +30,7 @@ const Index = () => {
   const [deleteTarget, setDeleteTarget] = useState<Ticket | null>(null);
   const [activeView, setActiveView] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const isAdmin = role === "admin";
