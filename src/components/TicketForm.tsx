@@ -134,7 +134,14 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
           <Input placeholder="John Doe" value={userName} onChange={(e) => setUserName(e.target.value)} required maxLength={100} className={fieldClass} />
         </Field>
         <Field label="Process">
-          <Input placeholder="e.g. Onboarding" value={process} onChange={(e) => setProcess(e.target.value)} maxLength={100} className={fieldClass} />
+          <Select value={process} onValueChange={(v) => setProcess(v)}>
+            <SelectTrigger className={fieldClass}><SelectValue placeholder="Select process" /></SelectTrigger>
+            <SelectContent className="liquid-glass-strong rounded-xl max-h-60">
+              {PROCESS_OPTIONS.map((p) => (
+                <SelectItem key={p} value={p}>{p}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </Field>
         <Field label="Reported By">
           <Input placeholder="Reporter name" value={reportedBy} onChange={(e) => setReportedBy(e.target.value)} maxLength={100} className={fieldClass} />
