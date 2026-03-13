@@ -10,7 +10,7 @@ export interface Ticket {
   user_name: string;
   process: string;
   reported_by: string;
-  priority: "Low" | "Medium" | "High" | "Critical";
+  priority: "Low" | "Medium" | "High";
   technician_name: string;
   issue_category: string;
   sub_category: string;
@@ -19,13 +19,11 @@ export interface Ticket {
   remarks: string;
   created_by: string;
   created_at?: string;
-  department?: string;
-  location?: string;
 }
 
-export const fetchTickets = async (userId?: string, canViewAll?: boolean): Promise<Ticket[]> => {
+export const fetchTickets = async (userId?: string, isAdmin?: boolean): Promise<Ticket[]> => {
   let query = supabase.from("tickets").select("*").order("sl_no", { ascending: false });
-  if (!canViewAll && userId) {
+  if (!isAdmin && userId) {
     query = query.eq("created_by", userId);
   }
   const { data, error } = await query;
@@ -39,13 +37,26 @@ export const fetchTickets = async (userId?: string, canViewAll?: boolean): Promi
 export const createTicket = async (
   ticket: Omit<Ticket, "id" | "sl_no" | "request_id" | "effort_time">
 ): Promise<{ data: Ticket | null; errorMessage: string | null }> => {
-  if (!ticket.user_name?.trim()) return { data: null, errorMessage: "User Name is required." };
-  if (!ticket.issue_category?.trim()) return { data: null, errorMessage: "Issue Category is required." };
-  if (!ticket.priority) return { data: null, errorMessage: "Priority is required." };
-  if (!ticket.created_by) return { data: null, errorMessage: "You must be logged in to create a ticket." };
-  if (!ticket.technician_name?.trim()) return { data: null, errorMessage: "Technician name is missing. Please reload and try again." };
+  // Validate required fields
+  if (!ticket.user_name?.trim()) {
+    return { data: null, errorMessage: "User Name is required." };
+  }
+  if (!ticket.issue_category?.trim()) {
+    return { data: null, errorMessage: "Issue Category is required." };
+  }
+  if (!ticket.priority) {
+    return { data: null, errorMessage: "Priority is required." };
+  }
+  if (!ticket.created_by) {
+    return { data: null, errorMessage: "You must be logged in to create a ticket." };
+  }
+  if (!ticket.technician_name?.trim()) {
+    return { data: null, errorMessage: "Technician name is missing. Please reload and try again." };
+  }
 
   try {
+    console.log("[Ticket] Submitting ticket:", JSON.stringify(ticket, null, 2));
+
     const { data, error } = await supabase
       .from("tickets")
       .insert({
@@ -62,21 +73,30 @@ export const createTicket = async (
         start_time: ticket.start_time || null,
         end_time: ticket.end_time || null,
         created_date: ticket.created_date,
-        department: ticket.department || "",
-        location: ticket.location || "",
       } as any)
       .select()
       .single();
 
     if (error) {
-      console.error("[Ticket] Database error:", error.code, error.message);
-      if (error.code === "23505") return { data: null, errorMessage: "Duplicate ticket detected. Please try again." };
-      if (error.code === "42501" || error.message?.includes("row-level security")) return { data: null, errorMessage: "Permission denied. Please sign out and sign back in." };
-      if (error.code === "PGRST301" || error.message?.includes("JWT")) return { data: null, errorMessage: "Session expired. Please sign out and sign back in." };
+      console.error("[Ticket] Database error:", error.code, error.message, error.details, error.hint);
+
+      if (error.code === "23505") {
+        return { data: null, errorMessage: "Duplicate ticket detected. Please try again." };
+      }
+      if (error.code === "42501" || error.message?.includes("row-level security")) {
+        return { data: null, errorMessage: "Permission denied. Please sign out and sign back in." };
+      }
+      if (error.code === "PGRST301" || error.message?.includes("JWT")) {
+        return { data: null, errorMessage: "Session expired. Please sign out and sign back in." };
+      }
       return { data: null, errorMessage: `Database error: ${error.message}` };
     }
 
+    console.log("[Ticket] Created successfully:", data?.request_id);
+
+    // Sync to Google Sheets (fire-and-forget)
     syncToSheet("create", data);
+
     return { data: data as unknown as Ticket, errorMessage: null };
   } catch (err: any) {
     console.error("[Ticket] Unexpected error:", err);
@@ -99,6 +119,7 @@ export const updateTicket = async (id: string, updates: Partial<Ticket>): Promis
     console.error("Error updating ticket:", error);
     return false;
   }
+
   syncToSheet("update", data);
   return true;
 };
@@ -115,7 +136,9 @@ export const deleteTicket = async (id: string, ticket: Ticket): Promise<boolean>
 
 const syncToSheet = async (action: string, ticket: any) => {
   try {
-    await supabase.functions.invoke("sync-sheet", { body: { action, ticket } });
+    await supabase.functions.invoke("sync-sheet", {
+      body: { action, ticket },
+    });
   } catch (e) {
     console.warn("Sheet sync failed:", e);
   }
@@ -124,18 +147,20 @@ const syncToSheet = async (action: string, ticket: any) => {
 export const exportToCSV = (tickets: Ticket[], filename: string) => {
   const headers = [
     "Sl No", "Request/Complaint ID", "Created Date", "Start Time", "End Time",
-    "User Name", "Department", "Location", "Priority", "Technician Name",
+    "User Name", "Process", "Reported By", "Priority", "Technician Name",
     "Issue Category", "Sub-category", "Effort Time", "Request Status", "Remarks"
   ];
 
+  // Sanitize cell values to prevent CSV formula injection
   const sanitize = (v: any): string => {
     const s = String(v ?? "");
+    // Prefix formula-starting characters with a single quote to neutralize them
     return /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
   };
 
   const rows = tickets.map(t => [
     t.sl_no, t.request_id, t.created_date, t.start_time || "", t.end_time || "",
-    t.user_name, t.department || "", t.location || "", t.priority, t.technician_name,
+    t.user_name, t.process, t.reported_by, t.priority, t.technician_name,
     t.issue_category, t.sub_category, t.effort_time, t.request_status, t.remarks
   ]);
 

@@ -14,42 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      assets: {
-        Row: {
-          asset_id: string
-          asset_type: string
-          assigned_user: string | null
-          created_at: string | null
-          id: string
-          notes: string | null
-          serial_number: string | null
-          status: string
-          updated_at: string | null
-        }
-        Insert: {
-          asset_id: string
-          asset_type: string
-          assigned_user?: string | null
-          created_at?: string | null
-          id?: string
-          notes?: string | null
-          serial_number?: string | null
-          status?: string
-          updated_at?: string | null
-        }
-        Update: {
-          asset_id?: string
-          asset_type?: string
-          assigned_user?: string | null
-          created_at?: string | null
-          id?: string
-          notes?: string | null
-          serial_number?: string | null
-          status?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string
@@ -82,12 +46,10 @@ export type Database = {
           created_at: string
           created_by: string
           created_date: string
-          department: string | null
           effort_time: string | null
           end_time: string | null
           id: string
           issue_category: string
-          location: string | null
           priority: string
           process: string | null
           remarks: string | null
@@ -105,12 +67,10 @@ export type Database = {
           created_at?: string
           created_by: string
           created_date?: string
-          department?: string | null
           effort_time?: string | null
           end_time?: string | null
           id?: string
           issue_category: string
-          location?: string | null
           priority?: string
           process?: string | null
           remarks?: string | null
@@ -128,12 +88,10 @@ export type Database = {
           created_at?: string
           created_by?: string
           created_date?: string
-          department?: string | null
           effort_time?: string | null
           end_time?: string | null
           id?: string
           issue_category?: string
-          location?: string | null
           priority?: string
           process?: string | null
           remarks?: string | null
@@ -182,15 +140,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role:
-        | "admin"
-        | "technician"
-        | "manager"
-        | "system_admin"
-        | "network_engineer"
-        | "it_team_lead"
-        | "it_manager"
-        | "it_head"
+      app_role: "admin" | "technician" | "manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -318,16 +268,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: [
-        "admin",
-        "technician",
-        "manager",
-        "system_admin",
-        "network_engineer",
-        "it_team_lead",
-        "it_manager",
-        "it_head",
-      ],
+      app_role: ["admin", "technician", "manager"],
     },
   },
 } as const

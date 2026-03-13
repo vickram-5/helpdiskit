@@ -5,8 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const VALID_ROLES = ["admin", "technician", "manager", "system_admin", "network_engineer", "it_team_lead", "it_manager", "it_head"];
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -52,9 +50,6 @@ Deno.serve(async (req) => {
     const { action, email, password, username, full_name, role, user_id, status } = body;
 
     if (action === "create") {
-      // Validate role
-      const safeRole = role && VALID_ROLES.includes(role) ? role : "technician";
-
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
@@ -68,7 +63,7 @@ Deno.serve(async (req) => {
 
       const { error: roleError } = await supabaseAdmin
         .from("user_roles")
-        .insert({ user_id: newUser.user.id, role: safeRole });
+        .insert({ user_id: newUser.user.id, role: role || "technician" });
 
       if (roleError) {
         return new Response(JSON.stringify({ error: roleError.message }), { status: 400, headers: corsHeaders });
@@ -93,15 +88,16 @@ Deno.serve(async (req) => {
     }
 
     if (action === "update") {
+      // Update role if provided
       if (role) {
-        if (!VALID_ROLES.includes(role)) {
-          return new Response(JSON.stringify({ error: "Invalid role" }), { status: 400, headers: corsHeaders });
-        }
         await supabaseAdmin.from("user_roles").update({ role }).eq("user_id", user_id);
       }
 
+      // Update status if provided
       if (status) {
         await supabaseAdmin.from("profiles").update({ status }).eq("user_id", user_id);
+        
+        // If setting inactive, ban the user; if active, unban
         if (status === "inactive") {
           await supabaseAdmin.auth.admin.updateUserById(user_id, { ban_duration: "876600h" });
         } else if (status === "active") {

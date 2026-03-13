@@ -11,18 +11,25 @@ import { Send, Loader2, CheckCircle2, CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { DEPARTMENTS, ISSUE_CATEGORIES, PRIORITIES } from "@/lib/constants";
 
 interface TicketFormProps {
   onTicketCreated: (ticket: Ticket) => void;
 }
 
+const ISSUE_CATEGORIES: Record<string, string[]> = {
+  Hardware: ["Laptop Issue", "Monitor", "Keyboard/Mouse", "Printer", "Other"],
+  Software: ["OS Issue", "Application Error", "Installation", "Update", "Other"],
+  Network: ["Internet", "VPN", "Wi-Fi", "LAN", "Other"],
+  Access: ["Password Reset", "Account Unlock", "Permission Request", "New Account", "Other"],
+  Other: [],
+};
+
 const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
   const { user, profile } = useAuth();
   const [userName, setUserName] = useState("");
-  const [department, setDepartment] = useState("");
-  const [location, setLocation] = useState("");
-  const [priority, setPriority] = useState("");
+  const [process, setProcess] = useState("");
+  const [reportedBy, setReportedBy] = useState("");
+  const [priority, setPriority] = useState<"Low" | "Medium" | "High" | "">("");
   const [issueCategory, setIssueCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -54,9 +61,9 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
     setSubmitting(true);
     const { data: ticket, errorMessage } = await createTicket({
       user_name: userName.trim(),
-      process: "",
-      reported_by: "",
-      priority: priority as Ticket["priority"],
+      process: process.trim(),
+      reported_by: reportedBy.trim(),
+      priority: priority as "Low" | "Medium" | "High",
       technician_name: profile?.username || user.email || "",
       issue_category: finalCategory,
       sub_category: finalSubCategory,
@@ -66,8 +73,6 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
       remarks: remarks.trim(),
       created_by: user.id,
       created_date: format(createdDate, "yyyy-MM-dd"),
-      department,
-      location: location.trim(),
     });
 
     if (ticket) {
@@ -75,7 +80,7 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
       toast({ title: `${ticket.request_id} created`, description: "Ticket saved & synced to Google Sheet." });
       setSuccess(true);
       setTimeout(() => {
-        setUserName(""); setDepartment(""); setLocation("");
+        setUserName(""); setProcess(""); setReportedBy("");
         setPriority(""); setIssueCategory(""); setSubCategory("");
         setStartTime(""); setEndTime(""); setRemarks("");
         setOtherCategory(""); setOtherSubCategory("");
@@ -91,12 +96,12 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
   const fieldClass = "bg-secondary/40 rounded-xl transition-all focus:ring-1 focus:ring-primary/30";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" role="form" aria-label="Raise new ticket form">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <Field label="Date *" htmlFor="ticket-date">
+        <Field label="Date *">
           <Popover>
             <PopoverTrigger asChild>
-              <Button id="ticket-date" variant="outline" aria-label="Select date" className={cn(fieldClass, "w-full justify-start text-left font-normal", !createdDate && "text-muted-foreground")}>
+              <Button variant="outline" className={cn(fieldClass, "w-full justify-start text-left font-normal", !createdDate && "text-muted-foreground")}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {createdDate ? format(createdDate, "dd/MM/yyyy") : "Pick a date"}
               </Button>
@@ -106,51 +111,44 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
             </PopoverContent>
           </Popover>
         </Field>
-        <Field label="Start Time" htmlFor="start-time">
-          <Input id="start-time" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className={fieldClass} step="60" aria-label="Start time" />
+        <Field label="Start Time">
+          <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className={fieldClass} step="60" />
         </Field>
-        <Field label="End Time" htmlFor="end-time">
-          <Input id="end-time" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={fieldClass} step="60" aria-label="End time" />
+        <Field label="End Time">
+          <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className={fieldClass} step="60" />
         </Field>
       </div>
 
-      <Field label="Technician Name" htmlFor="tech-name">
-        <Input id="tech-name" value={profile?.username || ""} readOnly className={`${fieldClass} opacity-60 cursor-not-allowed`} aria-label="Technician name (auto-filled)" tabIndex={-1} />
+      <Field label="Technician Name">
+        <Input value={profile?.username || ""} readOnly className={`${fieldClass} opacity-60 cursor-not-allowed`} />
       </Field>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <Field label="User Name *" htmlFor="user-name">
-          <Input id="user-name" placeholder="John Doe" value={userName} onChange={(e) => setUserName(e.target.value)} required maxLength={100} className={fieldClass} aria-label="User name" aria-required="true" />
+        <Field label="User Name *">
+          <Input placeholder="John Doe" value={userName} onChange={(e) => setUserName(e.target.value)} required maxLength={100} className={fieldClass} />
         </Field>
-        <Field label="Department" htmlFor="department">
-          <Select value={department} onValueChange={setDepartment}>
-            <SelectTrigger id="department" className={fieldClass} aria-label="Select department"><SelectValue placeholder="Select department" /></SelectTrigger>
-            <SelectContent className="liquid-glass-strong rounded-xl">
-              {DEPARTMENTS.map((d) => (
-                <SelectItem key={d} value={d}>{d}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <Field label="Process">
+          <Input placeholder="e.g. Onboarding" value={process} onChange={(e) => setProcess(e.target.value)} maxLength={100} className={fieldClass} />
         </Field>
-        <Field label="Location" htmlFor="location">
-          <Input id="location" placeholder="e.g. Floor 2, Bay 5" value={location} onChange={(e) => setLocation(e.target.value)} maxLength={100} className={fieldClass} aria-label="Location" />
+        <Field label="Reported By">
+          <Input placeholder="Reporter name" value={reportedBy} onChange={(e) => setReportedBy(e.target.value)} maxLength={100} className={fieldClass} />
         </Field>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <Field label="Priority *" htmlFor="priority">
-          <Select value={priority} onValueChange={setPriority}>
-            <SelectTrigger id="priority" className={fieldClass} aria-label="Select priority" aria-required="true"><SelectValue placeholder="Select" /></SelectTrigger>
+        <Field label="Priority *">
+          <Select value={priority} onValueChange={(v) => setPriority(v as "Low" | "Medium" | "High")}>
+            <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
             <SelectContent className="liquid-glass-strong rounded-xl">
-              {PRIORITIES.map((p) => (
-                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-              ))}
+              <SelectItem value="Low">🟢 Low</SelectItem>
+              <SelectItem value="Medium">🟡 Medium</SelectItem>
+              <SelectItem value="High">🔴 High</SelectItem>
             </SelectContent>
           </Select>
         </Field>
-        <Field label="Issue Category *" htmlFor="issue-cat">
+        <Field label="Issue Category *">
           <Select value={issueCategory} onValueChange={handleCategoryChange}>
-            <SelectTrigger id="issue-cat" className={fieldClass} aria-label="Select issue category" aria-required="true"><SelectValue placeholder="Select" /></SelectTrigger>
+            <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
             <SelectContent className="liquid-glass-strong rounded-xl">
               {Object.keys(ISSUE_CATEGORIES).map((cat) => (
                 <SelectItem key={cat} value={cat}>{cat}</SelectItem>
@@ -158,9 +156,9 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
             </SelectContent>
           </Select>
         </Field>
-        <Field label="Sub-category" htmlFor="sub-cat">
+        <Field label="Sub-category">
           <Select value={subCategory} onValueChange={(v) => { setSubCategory(v); setOtherSubCategory(""); }} disabled={!issueCategory || issueCategory === "Other"}>
-            <SelectTrigger id="sub-cat" className={fieldClass} aria-label="Select sub-category"><SelectValue placeholder="Select" /></SelectTrigger>
+            <SelectTrigger className={fieldClass}><SelectValue placeholder="Select" /></SelectTrigger>
             <SelectContent className="liquid-glass-strong rounded-xl">
               {subCategories.map((sub) => (
                 <SelectItem key={sub} value={sub}>{sub}</SelectItem>
@@ -171,31 +169,31 @@ const TicketForm = ({ onTicketCreated }: TicketFormProps) => {
       </div>
 
       {issueCategory === "Other" && (
-        <Field label="Specify Category *" htmlFor="other-cat">
-          <Input id="other-cat" placeholder="Enter custom category" value={otherCategory} onChange={(e) => setOtherCategory(e.target.value)} maxLength={100} className={fieldClass} aria-label="Specify custom category" />
+        <Field label="Specify Category *">
+          <Input placeholder="Enter custom category" value={otherCategory} onChange={(e) => setOtherCategory(e.target.value)} maxLength={100} className={fieldClass} />
         </Field>
       )}
 
       {subCategory === "Other" && (
-        <Field label="Specify Sub-category *" htmlFor="other-sub">
-          <Input id="other-sub" placeholder="Enter custom sub-category" value={otherSubCategory} onChange={(e) => setOtherSubCategory(e.target.value)} maxLength={100} className={fieldClass} aria-label="Specify custom sub-category" />
+        <Field label="Specify Sub-category *">
+          <Input placeholder="Enter custom sub-category" value={otherSubCategory} onChange={(e) => setOtherSubCategory(e.target.value)} maxLength={100} className={fieldClass} />
         </Field>
       )}
 
-      <Field label="Remarks" htmlFor="remarks">
-        <Textarea id="remarks" placeholder="Describe the issue..." value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={3} maxLength={2000} className={`${fieldClass} resize-none`} aria-label="Remarks or description" />
+      <Field label="Remarks">
+        <Textarea placeholder="Describe the issue..." value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={3} maxLength={2000} className={`${fieldClass} resize-none`} />
       </Field>
 
-      <Button type="submit" disabled={submitting || !userName.trim() || !issueCategory || !priority} className="w-full h-11 font-semibold text-sm tracking-wide rounded-xl" aria-label="Submit ticket">
+      <Button type="submit" disabled={submitting || !userName.trim() || !issueCategory || !priority} className="w-full h-11 font-semibold text-sm tracking-wide rounded-xl">
         {submitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : success ? <><CheckCircle2 className="mr-2 h-4 w-4" /> Ticket Created!</> : <><Send className="mr-2 h-4 w-4" /> Submit Ticket</>}
       </Button>
     </form>
   );
 };
 
-const Field = ({ label, htmlFor, children }: { label: string; htmlFor?: string; children: React.ReactNode }) => (
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="space-y-1.5">
-    <label htmlFor={htmlFor} className="text-xs font-medium text-muted-foreground">{label}</label>
+    <label className="text-xs font-medium text-muted-foreground">{label}</label>
     {children}
   </div>
 );
