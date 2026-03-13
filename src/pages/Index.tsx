@@ -64,6 +64,18 @@ const Index = () => {
     exportToCSV(tickets, `IT_Tickets_${new Date().toISOString().split("T")[0]}`);
   };
 
+  const handleSyncFromSheet = async () => {
+    setSyncing(true);
+    const result = await importFromSheet();
+    if (result) {
+      toast({ title: "Sync Complete", description: `${result.updated} tickets updated from Google Sheet.` });
+      await loadTickets();
+    } else {
+      toast({ title: "Sync Failed", description: "Could not import from Google Sheet.", variant: "destructive" });
+    }
+    setSyncing(false);
+  };
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good Morning";
