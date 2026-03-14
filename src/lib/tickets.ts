@@ -151,7 +151,7 @@ export const importFromSheet = async (): Promise<{ updated: number; created: num
       console.error("Import from sheet failed:", error);
       return null;
     }
-    return data as { updated: number; total: number };
+    return data as { updated: number; created: number; total: number };
   } catch (e) {
     console.warn("Sheet import failed:", e);
     return null;
