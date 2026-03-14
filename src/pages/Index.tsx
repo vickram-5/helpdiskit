@@ -8,6 +8,7 @@ import EditTicketDialog from "@/components/EditTicketDialog";
 import UserManagement from "@/components/UserManagement";
 import LiquidBackground from "@/components/LiquidBackground";
 import AppSidebar from "@/components/AppSidebar";
+import BulkImport from "@/components/BulkImport";
 import { Button } from "@/components/ui/button";
 import { LogOut, Download, Menu, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -68,7 +69,7 @@ const Index = () => {
     setSyncing(true);
     const result = await importFromSheet();
     if (result) {
-      toast({ title: "Sync Complete", description: `${result.updated} tickets updated from Google Sheet.` });
+      toast({ title: "Sync Complete", description: `${result.updated} updated, ${result.created || 0} new tickets from Google Sheet.` });
       await loadTickets();
     } else {
       toast({ title: "Sync Failed", description: "Could not import from Google Sheet.", variant: "destructive" });
@@ -86,7 +87,12 @@ const Index = () => {
   const renderContent = () => {
     switch (activeView) {
       case "dashboard":
-        return <AdminDashboard tickets={tickets} />;
+        return (
+          <div className="space-y-6">
+            <AdminDashboard tickets={tickets} />
+            {isAdmin && <BulkImport onImported={loadTickets} userId={user?.id || ""} />}
+          </div>
+        );
       case "raise":
         return (
           <div className="max-w-3xl">
