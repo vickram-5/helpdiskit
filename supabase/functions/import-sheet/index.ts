@@ -233,8 +233,8 @@ Deno.serve(async (req) => {
             request_status: row["Request Status"] || "Open",
             remarks: row["Remarks"] || "",
             created_by: adminUser?.user_id || "00000000-0000-0000-0000-000000000000",
-            start_time: row["Start Time"] || null,
-            end_time: row["End Time"] || null,
+            start_time: parseTimeValue(row["Start Time"]),
+            end_time: parseTimeValue(row["End Time"]),
           };
 
           const { error } = await supabaseAdmin.from("tickets").insert(insertData);
