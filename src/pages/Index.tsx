@@ -8,6 +8,7 @@ import EditTicketDialog from "@/components/EditTicketDialog";
 import UserManagement from "@/components/UserManagement";
 import LiquidBackground from "@/components/LiquidBackground";
 import AppSidebar from "@/components/AppSidebar";
+import BulkImport from "@/components/BulkImport";
 import { Button } from "@/components/ui/button";
 import { LogOut, Download, Menu, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
