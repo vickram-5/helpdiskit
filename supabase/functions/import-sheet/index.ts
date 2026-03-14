@@ -154,8 +154,8 @@ Deno.serve(async (req) => {
           request_status: row["Request Status"] || row["request_status"] || "Open",
           remarks: row["Remarks"] || row["remarks"] || "",
           created_by: bulkCreatedBy,
-          start_time: row["Start Time"] || row["start_time"] || null,
-          end_time: row["End Time"] || row["end_time"] || null,
+          start_time: parseTimeValue(row["Start Time"] || row["start_time"]),
+          end_time: parseTimeValue(row["End Time"] || row["end_time"]),
         };
 
         if (row["Created Date"] || row["created_date"]) {
