@@ -7,6 +7,26 @@ const corsHeaders = {
 
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxitMHVaJTfw-bZmjy0mVpCpcq3VuXrtSiLedDCkVlPrQTBYaHEJ7AFEytgsozSCOEB/exec";
 
+// Parse time values from Google Sheets (ISO datetime like 1899-12-30T04:45:50.000Z) to HH:MM:SS
+function parseTimeValue(val: any): string | null {
+  if (!val) return null;
+  const s = String(val).trim();
+  if (!s) return null;
+  // Already in HH:MM or HH:MM:SS format
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(s)) return s;
+  // ISO datetime from Excel epoch (1899-12-30T...)
+  const isoMatch = s.match(/T(\d{2}:\d{2}:\d{2})/);
+  if (isoMatch) return isoMatch[1];
+  // Try parsing as date
+  try {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().match(/T(\d{2}:\d{2}:\d{2})/)?.[1] || null;
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
