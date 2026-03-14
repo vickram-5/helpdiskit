@@ -54,16 +54,22 @@ const UserManagement = () => {
   const { toast } = useToast();
 
   const fetchUsers = async () => {
-    const { data } = await supabase.functions.invoke("manage-users", {
-      body: { action: "list" },
-    });
-    if (data?.profiles && data?.roles) {
-      const merged = data.profiles.map((p: any) => ({
-        ...p,
-        role: data.roles.find((r: any) => r.user_id === p.user_id)?.role || "technician",
-        status: p.status || "active",
-      }));
-      setUsers(merged);
+    try {
+      const { data } = await supabase.functions.invoke("manage-users", {
+        body: { action: "list" },
+      });
+      if (data?.profiles && data?.roles) {
+        const merged = data.profiles.map((p: any) => ({
+          ...p,
+          role: data.roles.find((r: any) => r.user_id === p.user_id)?.role || "technician",
+          status: p.status || "active",
+        }));
+        setUsers(merged);
+      }
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    } finally {
+      setPageLoading(false);
     }
   };
 
