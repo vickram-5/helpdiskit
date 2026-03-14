@@ -69,7 +69,7 @@ const Index = () => {
     setSyncing(true);
     const result = await importFromSheet();
     if (result) {
-      toast({ title: "Sync Complete", description: `${result.updated} tickets updated from Google Sheet.` });
+      toast({ title: "Sync Complete", description: `${result.updated} updated, ${result.created || 0} new tickets from Google Sheet.` });
       await loadTickets();
     } else {
       toast({ title: "Sync Failed", description: "Could not import from Google Sheet.", variant: "destructive" });
