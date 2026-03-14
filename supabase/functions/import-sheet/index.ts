@@ -7,6 +7,26 @@ const corsHeaders = {
 
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxitMHVaJTfw-bZmjy0mVpCpcq3VuXrtSiLedDCkVlPrQTBYaHEJ7AFEytgsozSCOEB/exec";
 
+// Parse time values from Google Sheets (ISO datetime like 1899-12-30T04:45:50.000Z) to HH:MM:SS
+function parseTimeValue(val: any): string | null {
+  if (!val) return null;
+  const s = String(val).trim();
+  if (!s) return null;
+  // Already in HH:MM or HH:MM:SS format
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(s)) return s;
+  // ISO datetime from Excel epoch (1899-12-30T...)
+  const isoMatch = s.match(/T(\d{2}:\d{2}:\d{2})/);
+  if (isoMatch) return isoMatch[1];
+  // Try parsing as date
+  try {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().match(/T(\d{2}:\d{2}:\d{2})/)?.[1] || null;
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -134,8 +154,8 @@ Deno.serve(async (req) => {
           request_status: row["Request Status"] || row["request_status"] || "Open",
           remarks: row["Remarks"] || row["remarks"] || "",
           created_by: bulkCreatedBy,
-          start_time: row["Start Time"] || row["start_time"] || null,
-          end_time: row["End Time"] || row["end_time"] || null,
+          start_time: parseTimeValue(row["Start Time"] || row["start_time"]),
+          end_time: parseTimeValue(row["End Time"] || row["end_time"]),
         };
 
         if (row["Created Date"] || row["created_date"]) {
@@ -172,8 +192,8 @@ Deno.serve(async (req) => {
           if (row["Sub-category"] !== undefined) updates.sub_category = row["Sub-category"] || "";
           if (row["Request Status"] !== undefined) updates.request_status = row["Request Status"];
           if (row["Remarks"] !== undefined) updates.remarks = row["Remarks"] || "";
-          if (row["Start Time"] !== undefined) updates.start_time = row["Start Time"] || null;
-          if (row["End Time"] !== undefined) updates.end_time = row["End Time"] || null;
+          if (row["Start Time"] !== undefined) updates.start_time = parseTimeValue(row["Start Time"]);
+          if (row["End Time"] !== undefined) updates.end_time = parseTimeValue(row["End Time"]);
 
           if (Object.keys(updates).length > 0) {
             const { error } = await supabaseAdmin
@@ -213,8 +233,8 @@ Deno.serve(async (req) => {
             request_status: row["Request Status"] || "Open",
             remarks: row["Remarks"] || "",
             created_by: adminUser?.user_id || "00000000-0000-0000-0000-000000000000",
-            start_time: row["Start Time"] || null,
-            end_time: row["End Time"] || null,
+            start_time: parseTimeValue(row["Start Time"]),
+            end_time: parseTimeValue(row["End Time"]),
           };
 
           const { error } = await supabaseAdmin.from("tickets").insert(insertData);

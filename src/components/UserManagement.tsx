@@ -31,6 +31,7 @@ const UserManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [password, setPassword] = useState("");
@@ -53,16 +54,22 @@ const UserManagement = () => {
   const { toast } = useToast();
 
   const fetchUsers = async () => {
-    const { data } = await supabase.functions.invoke("manage-users", {
-      body: { action: "list" },
-    });
-    if (data?.profiles && data?.roles) {
-      const merged = data.profiles.map((p: any) => ({
-        ...p,
-        role: data.roles.find((r: any) => r.user_id === p.user_id)?.role || "technician",
-        status: p.status || "active",
-      }));
-      setUsers(merged);
+    try {
+      const { data } = await supabase.functions.invoke("manage-users", {
+        body: { action: "list" },
+      });
+      if (data?.profiles && data?.roles) {
+        const merged = data.profiles.map((p: any) => ({
+          ...p,
+          role: data.roles.find((r: any) => r.user_id === p.user_id)?.role || "technician",
+          status: p.status || "active",
+        }));
+        setUsers(merged);
+      }
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    } finally {
+      setPageLoading(false);
     }
   };
 
@@ -177,6 +184,12 @@ const UserManagement = () => {
         </div>
       </div>
 
+      {pageLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="ml-2 text-sm text-muted-foreground">Loading users...</span>
+        </div>
+      ) : (
       <div className="rounded-2xl overflow-x-auto liquid-glass-subtle">
         <Table>
           <TableHeader>
@@ -228,6 +241,7 @@ const UserManagement = () => {
           </TableBody>
         </Table>
       </div>
+      )}
 
       {/* Add User Dialog */}
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
