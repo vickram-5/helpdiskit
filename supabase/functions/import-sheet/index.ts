@@ -192,8 +192,8 @@ Deno.serve(async (req) => {
           if (row["Sub-category"] !== undefined) updates.sub_category = row["Sub-category"] || "";
           if (row["Request Status"] !== undefined) updates.request_status = row["Request Status"];
           if (row["Remarks"] !== undefined) updates.remarks = row["Remarks"] || "";
-          if (row["Start Time"] !== undefined) updates.start_time = row["Start Time"] || null;
-          if (row["End Time"] !== undefined) updates.end_time = row["End Time"] || null;
+          if (row["Start Time"] !== undefined) updates.start_time = parseTimeValue(row["Start Time"]);
+          if (row["End Time"] !== undefined) updates.end_time = parseTimeValue(row["End Time"]);
 
           if (Object.keys(updates).length > 0) {
             const { error } = await supabaseAdmin
