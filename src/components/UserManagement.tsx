@@ -184,6 +184,12 @@ const UserManagement = () => {
         </div>
       </div>
 
+      {pageLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="ml-2 text-sm text-muted-foreground">Loading users...</span>
+        </div>
+      ) : (
       <div className="rounded-2xl overflow-x-auto liquid-glass-subtle">
         <Table>
           <TableHeader>
@@ -235,6 +241,7 @@ const UserManagement = () => {
           </TableBody>
         </Table>
       </div>
+      )}
 
       {/* Add User Dialog */}
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
