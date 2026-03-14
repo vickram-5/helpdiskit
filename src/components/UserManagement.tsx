@@ -31,6 +31,7 @@ const UserManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [password, setPassword] = useState("");
