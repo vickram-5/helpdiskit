@@ -87,7 +87,12 @@ const Index = () => {
   const renderContent = () => {
     switch (activeView) {
       case "dashboard":
-        return <AdminDashboard tickets={tickets} />;
+        return (
+          <div className="space-y-6">
+            <AdminDashboard tickets={tickets} />
+            {isAdmin && <BulkImport onImported={loadTickets} userId={user?.id || ""} />}
+          </div>
+        );
       case "raise":
         return (
           <div className="max-w-3xl">

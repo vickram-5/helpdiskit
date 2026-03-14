@@ -144,7 +144,7 @@ const syncToSheet = async (action: string, ticket: any) => {
   }
 };
 
-export const importFromSheet = async (): Promise<{ updated: number; total: number } | null> => {
+export const importFromSheet = async (): Promise<{ updated: number; created: number; total: number } | null> => {
   try {
     const { data, error } = await supabase.functions.invoke("import-sheet");
     if (error) {
